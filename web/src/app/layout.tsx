@@ -2,10 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
-import { Navbar } from "@/components/navbar";
-import { Footer } from "@/components/footer";
 import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
+import ClientLayout from "@/components/ClientLayout";
+import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,9 +37,10 @@ const RootLayout = async({
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         > 
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
-            <Navbar/>
+            <ClientLayout>
               {children}
-            <Footer/>
+              <Toaster />
+            </ClientLayout>
           </ThemeProvider>
         </body>
       </SessionProvider>
