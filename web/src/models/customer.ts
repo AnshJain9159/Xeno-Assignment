@@ -8,8 +8,8 @@ export interface ICustomer extends Document {
   totalSpends: number;
   visitCount: number;
   lastActiveDate?: Date; // Optional: can be updated when they interact
-  // Any other fields relevant to a CRM customer
   createdBy: Schema.Types.ObjectId; // Optional: Reference to the User who created it
+  
 }
 
 // Mongoose schema for Customer
@@ -44,7 +44,6 @@ const CustomerSchema: Schema<ICustomer> = new mongoose.Schema({
     type: Date,
     optional: true,
   },
-  // You might want to link customers to the User who created/manages them
   createdBy: { type: Schema.Types.ObjectId, ref: 'User' },
 }, { timestamps: true }); // Adds createdAt and updatedAt automatically
 

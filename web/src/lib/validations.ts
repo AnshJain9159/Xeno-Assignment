@@ -30,3 +30,15 @@ export const customerSchema = z.object({
   visitCount: z.number().int().min(0, { message: "Visit count cannot be negative" }).optional().default(0),
   lastActiveDate: z.string().datetime({ offset: true }).optional().transform((val) => val ? new Date(val) : undefined),
 });
+
+export const ruleConditionSchema = z.object({
+  field: z.enum(['totalSpends', 'visitCount', 'lastActiveDate', 'name', 'email']),
+  operator: z.enum(['EQUALS', 'NOT_EQUALS', 'GREATER_THAN', 'LESS_THAN', 'CONTAINS', 'STARTS_WITH', 'ENDS_WITH', 'OLDER_THAN_DAYS', 'IN_LAST_DAYS']),
+  value: z.union([z.string(), z.number(), z.date()]),
+  dataType: z.enum(['string', 'number', 'date']).optional(),
+});
+
+export const baseRuleGroupSchema = z.object({
+  logicalOperator: z.enum(['AND', 'OR']),
+  conditions: z.array(ruleConditionSchema),
+});

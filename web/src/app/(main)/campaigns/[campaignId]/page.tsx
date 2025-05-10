@@ -12,6 +12,8 @@ import { Badge, badgeVariants } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { ArrowLeft, RefreshCw, SendIcon } from 'lucide-react'; 
+import CampaignSummary from '@/components/campaignSummary';
+import CampaignTags from '@/components/campaignAutotag';
 
 async function fetchCampaignDetails(id: string): Promise<{ campaign: ICampaign | null; logs: ICommunicationLog[] }> {
   console.log(`Frontend: Fetching details for campaign ${id}`);
@@ -192,7 +194,8 @@ export default function CampaignDetailPage() {
                 </pre>
             </CardContent>
         </Card>
-
+          <CampaignSummary campaignId={campaignId} />
+          <CampaignTags campaignId={campaignId} initialTags={campaign?.tags} />            
         <Card>
             <CardHeader>
                 <CardTitle>Communication Logs ({logs.length})</CardTitle>

@@ -10,19 +10,10 @@ import UserModel from '@/models/user';
 // You would typically import your Zod schemas for rules from a shared location
 // For brevity, I'll redefine a simplified version here or assume they are available.
 import { auth } from "@/auth";
+import { baseRuleGroupSchema } from '@/lib/validations';
 
 // --- Zod Schemas for Rule Validation (ensure these match your Campaign model's needs) ---
-const ruleConditionSchema = z.object({
-  field: z.enum(['totalSpends', 'visitCount', 'lastActiveDate', 'name', 'email']),
-  operator: z.enum(['EQUALS', 'NOT_EQUALS', 'GREATER_THAN', 'LESS_THAN', 'CONTAINS', 'STARTS_WITH', 'ENDS_WITH', 'OLDER_THAN_DAYS', 'IN_LAST_DAYS']),
-  value: z.union([z.string(), z.number(), z.date()]), // Consider z.coerce.date() for date strings
-  dataType: z.enum(['string', 'number', 'date']).optional(),
-});
 
-const baseRuleGroupSchema = z.object({
-  logicalOperator: z.enum(['AND', 'OR']),
-  conditions: z.array(ruleConditionSchema),
-});
 
 type RuleGroupInput = z.infer<typeof baseRuleGroupSchema> & {
   groups?: RuleGroupInput[];

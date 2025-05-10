@@ -6,7 +6,6 @@ import { SessionProvider } from "next-auth/react";
 import { auth } from "@/auth";
 import ClientLayout from "@/components/ClientLayout";
 import { Toaster } from "@/components/ui/sonner";
-import { redirect } from "next/navigation";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -19,7 +18,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Xeno CRM Platform",
+  title: "Smart-Sphere",
   description: "Intelligent customer relationship management platform for the Xeno SDE Internship Assignment",
 }
 

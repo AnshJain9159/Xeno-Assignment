@@ -32,6 +32,7 @@ export interface ICampaign extends Document {
   createdAt: Date;
   updatedAt: Date;
   failureReason: string;
+  tags: string[];
 }
 
 // Mongoose schema for Campaign
@@ -74,7 +75,13 @@ const CampaignSchema: Schema<ICampaign> = new mongoose.Schema({
     ref: 'User',
     required: true, // Ensure only authenticated users can create campaigns
   },
-}, { timestamps: true });
+  tags: {
+    type: [String],
+    default: [],
+  },
+}, { timestamps: true },
+  
+);
 
 // Ensure the model is not recompiled if it already exists
 const CampaignModel: Model<ICampaign> = mongoose.models.Campaign || mongoose.model<ICampaign>('Campaign', CampaignSchema);

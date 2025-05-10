@@ -6,20 +6,10 @@ import CustomerModel from '@/models/customer';
 import { AudienceRuleSet, IRuleCondition, IRuleGroup } from '@/models/campaign'; // Assuming Campaign.ts exports these
 import { z } from 'zod';
 import mongoose from 'mongoose';
+import { baseRuleGroupSchema } from '@/lib/validations';
 
 // --- Zod Schemas for Rule Validation ---
-const ruleConditionSchema = z.object({
-  field: z.enum(['totalSpends', 'visitCount', 'lastActiveDate', 'name', 'email']),
-  operator: z.enum(['EQUALS', 'NOT_EQUALS', 'GREATER_THAN', 'LESS_THAN', 'CONTAINS', 'STARTS_WITH', 'ENDS_WITH', 'OLDER_THAN_DAYS', 'IN_LAST_DAYS']),
-  value: z.union([z.string(), z.number(), z.date()]),
-  dataType: z.enum(['string', 'number', 'date']).optional(),
-});
 
-// Recursive schema for rule groups
-const baseRuleGroupSchema = z.object({
-  logicalOperator: z.enum(['AND', 'OR']),
-  conditions: z.array(ruleConditionSchema),
-});
 type RuleGroupInput = z.infer<typeof baseRuleGroupSchema> & {
   groups?: RuleGroupInput[];
 };

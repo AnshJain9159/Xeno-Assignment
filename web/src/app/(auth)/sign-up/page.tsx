@@ -90,7 +90,7 @@ export default function SignUp() {
               </div>
             </div>
             <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
-            <CardDescription>Get started with Xeno CRM platform</CardDescription>
+            <CardDescription>Get started with Smart-Sphere</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex flex-col space-y-1.5 p-3 bg-muted/50 rounded-lg">

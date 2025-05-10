@@ -47,11 +47,9 @@ export async function POST(req: NextRequest) {
       log.sentAt = undefined;
     } else {
         console.warn(`Delivery Receipt Webhook: Received unhandled status "${status}" for log ${communicationLogId}`);
-        // Decide how to handle unknown statuses, maybe just save vendorMessageId and timestamp
     }
     await log.save();
 
-    // Atomically increment sentCount or failedCount on the campaign
     if (log.campaignId && (status === "SENT" || status === "DELIVERED" || status === "FAILED")) {
         const update = (status === "SENT" || status === "DELIVERED")
         ? { $inc: { sentCount: 1 } }

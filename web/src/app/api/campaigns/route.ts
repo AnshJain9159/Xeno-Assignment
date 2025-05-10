@@ -9,18 +9,8 @@ import CommunicationLogModel from '@/models/communicationLog';
 import { z } from 'zod';
 import mongoose from 'mongoose';
 import { auth } from "@/auth";
-// --- Zod Schemas (can be imported from a shared types file or audience preview) ---
-const ruleConditionSchema = z.object({
-  field: z.enum(['totalSpends', 'visitCount', 'lastActiveDate', 'name', 'email']),
-  operator: z.enum(['EQUALS', 'NOT_EQUALS', 'GREATER_THAN', 'LESS_THAN', 'CONTAINS', 'STARTS_WITH', 'ENDS_WITH', 'OLDER_THAN_DAYS', 'IN_LAST_DAYS']),
-  value: z.union([z.string(), z.number(), z.date()]),
-  dataType: z.enum(['string', 'number', 'date']).optional(),
-});
+import { baseRuleGroupSchema } from '@/lib/validations';
 
-const baseRuleGroupSchema = z.object({
-  logicalOperator: z.enum(['AND', 'OR']),
-  conditions: z.array(ruleConditionSchema),
-});
 type RuleGroupInput = z.infer<typeof baseRuleGroupSchema> & {
   groups?: RuleGroupInput[];
 };
@@ -93,6 +83,8 @@ function personalizeMessage(template: string, customer: ICustomer): string {
         .replace(/{{visitCount}}/gi, String(customer.visitCount));
 }
 
+const DUMMY_VENDOR_API_URL = `${process.env.NEXT_PUBLIC_APP_URL}/api/dummy-vendor/send`;
+const DELIVERY_RECEIPT_CALLBACK_URL = `${process.env.NEXT_PUBLIC_APP_URL}/api/webhooks/delivery-receipts`;
 
 export async function POST(request: NextRequest) {
   try {
@@ -161,19 +153,35 @@ export async function POST(request: NextRequest) {
 
       if (communicationLogs.length > 0) {
         await CommunicationLogModel.insertMany(communicationLogs);
+
+        // Fetch the logs you just created (to get their _id)
+        const logs = await CommunicationLogModel.find({ campaignId: newCampaign._id });
+
+        for (const log of logs) {
+          const customer = customersInSegment.find(c => c._id.equals(log.customerId));
+          if (!customer) continue;
+        
+          const payload = {
+            customerId: customer._id.toString(),
+            customerEmail: customer.email,
+            message: log.message,
+            communicationLogId: log._id.toString(),
+            callbackUrl: DELIVERY_RECEIPT_CALLBACK_URL,
+          };
+        
+          // Fire-and-forget (do not await, or use Promise.all for demo)
+          fetch(DUMMY_VENDOR_API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          }).then(res => {
+            console.log(`Dummy vendor API called for log ${log._id}, status: ${res.status}`);
+          }).catch(err => {
+            console.error(`Error calling dummy vendor API for log ${log._id}:`, err);
+          });
+        }
       }
-      
-      // TODO: Trigger the actual sending process (calling dummy vendor API for each log)
-      // This part is crucial for step 3 of the assignment.
-      // For now, we've logged them as PENDING. A separate worker/process would pick these up.
-      // Or, you can loop here and call a simulated send function.
       console.log(`Campaign ${newCampaign.name} created. ${communicationLogs.length} messages logged as PENDING.`);
-      // Simulate sending (simplified)
-      // In a real app, this would be a call to a service or message queue.
-      // For now, just updating status to SENT/FAILED directly for demonstration.
-      // This is NOT how the final "dummy vendor API" interaction should work,
-      // but it's a placeholder for campaign initiation.
-      // The actual vendor API call and receipt handling will be separate.
     }
 
 

@@ -8,7 +8,7 @@ export function Footer() {
         <div className="flex flex-col items-center justify-center text-center space-y-4">
           <div className="flex items-center gap-2">
             <Wand2 className="h-5 w-5 text-primary" />
-            <span className="font-semibold">Xeno-CRM</span>
+            <span className="font-semibold">Smart-Sphere</span>
           </div>
 
           {/* Social Links */}
@@ -40,7 +40,7 @@ export function Footer() {
           </div>
 
           <div className="text-sm text-muted-foreground">
-            Powered by Groq API (Fast AI Inference) • © {new Date().getFullYear()} Xeno-CRM • Made with ❤️ by Ansh Jain
+            Powered by Groq API (Fast AI Inference) • © {new Date().getFullYear()} Smart-Sphere • Made with ❤️ by Ansh Jain
           </div>
         </div>
       </div>

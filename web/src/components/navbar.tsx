@@ -14,7 +14,6 @@ export function Navbar() {
   const mainPages = [
     // { href: "/", label: "Home" },
     { href: "/audiences", label: "Audiences" },
-    // { href: "/audiences/create", label: "Create Audience" },
     { href: "/campaigns", label: "Campaigns" },
     { href: "/ingest-data", label: "Ingest Data" },
   ];
@@ -26,7 +25,7 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           <Link href="/" className="flex items-center gap-2">
             <Wand2 className="h-6 w-6 text-primary" />
-            <span className="text-xl font-bold">Xeno-CRM</span>
+            <span className="text-xl font-bold">Smart-Sphere</span>
           </Link>
         </div>
 
