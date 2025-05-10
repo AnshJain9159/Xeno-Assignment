@@ -8,14 +8,21 @@ import UserModel from "@/models/user";
 import { signInSchema } from "@/lib/validations";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
+  secret: process.env.NEXTAUTH_SECRET,
+  
   session:{
     strategy: "jwt",
-    maxAge: 24 * 60 * 60, 
+    maxAge: 24 * 60 * 60,
+    updateAge: 24 * 60 * 60,
+
   },
+
   adapter: MongoDBAdapter(client),
   pages: {
-    signIn: "/sign-in"
+    signIn: "/sign-in",
+    newUser: "/sign-up",
   },
+  
   providers: [
     Google,
     CredentialsProvider({

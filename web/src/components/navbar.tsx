@@ -10,6 +10,15 @@ export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const { data: session } = useSession();
 
+  // Main section pages
+  const mainPages = [
+    // { href: "/", label: "Home" },
+    { href: "/audiences", label: "Audiences" },
+    // { href: "/audiences/create", label: "Create Audience" },
+    { href: "/campaigns", label: "Campaigns" },
+    { href: "/ingest-data", label: "Ingest Data" },
+  ];
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-sm">
       <div className="container flex h-16 items-center justify-between max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -21,23 +30,24 @@ export function Navbar() {
           </Link>
         </div>
 
+        {/* Main Section Navigation */}
+        <nav className="hidden md:flex items-center gap-2">
+          {mainPages.map((page) => (
+            <Link
+              key={page.href}
+              href={page.href}
+              className="text-sm font-medium px-3 py-2 rounded hover:bg-muted transition-colors"
+            >
+              {page.label}
+            </Link>
+          ))}
+        </nav>
+
         {/* Actions */}
         <div className="flex items-center gap-4">
           <ThemeToggle />
           {session ? (
             <>
-              {/* <Link href="/history">
-                <Button variant="outline" size="sm" className="hidden sm:flex gap-2">
-                  <History className="h-4 w-4" />
-                  History
-                </Button>
-              </Link> */}
-              <Link href="/dashboard">
-                <Button size="sm" className="gap-2 hidden sm:flex">
-                  Get Started
-                  <ArrowRight className="h-4 w-4" />
-                </Button>
-              </Link>
               <Button
                 variant="ghost"
                 size="sm"
@@ -80,29 +90,20 @@ export function Navbar() {
       {/* Mobile Sidebar */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-background border-t py-4 px-6 space-y-4 animate-in slide-in-from-top-10 duration-200">
-          <Link
-            href="/"
-            className="block text-base font-medium hover:text-primary transition-colors"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            Home
-          </Link>
-          {session ? (
-            <>
-              {/* <Link
-                href="/history"
-                className="block text-base font-medium hover:text-primary transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                History
-              </Link> */}
+          <div className="flex flex-col gap-2">
+            {mainPages.map((page) => (
               <Link
-                href="#"
+                key={page.href}
+                href={page.href}
                 className="block text-base font-medium hover:text-primary transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
-                Get Started
+                {page.label}
               </Link>
+            ))}
+          </div>
+          <div className="border-t pt-4 flex flex-col gap-2">
+            {session ? (
               <button
                 className="block text-base font-medium hover:text-primary transition-colors w-full text-left"
                 onClick={() => {
@@ -112,29 +113,29 @@ export function Navbar() {
               >
                 Logout
               </button>
-            </>
-          ) : (
-            <>
-              <button
-                className="block text-base font-medium hover:text-primary transition-colors w-full text-left"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  signIn(undefined, { callbackUrl: "/dashboard" });
-                }}
-              >
-                Sign In
-              </button>
-              <button
-                className="block text-base font-medium hover:text-primary transition-colors w-full text-left"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  signIn(undefined, { callbackUrl: "/dashboard" });
-                }}
-              >
-                Sign Up
-              </button>
-            </>
-          )}
+            ) : (
+              <>
+                <button
+                  className="block text-base font-medium hover:text-primary transition-colors w-full text-left"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    signIn(undefined, { callbackUrl: "/dashboard" });
+                  }}
+                >
+                  Sign In
+                </button>
+                <button
+                  className="block text-base font-medium hover:text-primary transition-colors w-full text-left"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    signIn(undefined, { callbackUrl: "/dashboard" });
+                  }}
+                >
+                  Sign Up
+                </button>
+              </>
+            )}
+          </div>
         </div>
       )}
     </header>

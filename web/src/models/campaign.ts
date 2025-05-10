@@ -28,7 +28,7 @@ export interface ICampaign extends Document {
   audienceSize: number;
   sentCount: number;
   failedCount: number;
-  // createdBy: Schema.Types.ObjectId; // Reference to the User who created it (from NextAuth)
+  createdBy: Schema.Types.ObjectId; // Reference to the User who created it (from NextAuth)
   createdAt: Date;
   updatedAt: Date;
 }
@@ -68,11 +68,11 @@ const CampaignSchema: Schema<ICampaign> = new mongoose.Schema({
     default: 0,
     min: 0,
   },
-  // createdBy: {
-  //   type: Schema.Types.ObjectId,
-  //   ref: 'User',
-  //   required: true, // Ensure only authenticated users can create campaigns
-  // },
+  createdBy: {
+    type: Schema.Types.ObjectId,
+    ref: 'User',
+    required: true, // Ensure only authenticated users can create campaigns
+  },
 }, { timestamps: true });
 
 // Ensure the model is not recompiled if it already exists

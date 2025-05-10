@@ -6,8 +6,10 @@ import dbConnect from '@/lib/dbConnect';
 import AudienceSegmentModel from '@/models/audienceSegment';
 import { AudienceRuleSet, IRuleCondition, IRuleGroup } from '@/models/campaign'; // Assuming Campaign.ts exports these
 import { z } from 'zod';
+import UserModel from '@/models/user';
 // You would typically import your Zod schemas for rules from a shared location
 // For brevity, I'll redefine a simplified version here or assume they are available.
+import { auth } from "@/auth";
 
 // --- Zod Schemas for Rule Validation (ensure these match your Campaign model's needs) ---
 const ruleConditionSchema = z.object({
@@ -37,16 +39,14 @@ const createAudienceSegmentSchema = z.object({
   description: z.string().trim().optional(),
   rules: audienceRuleSetSchema,
 });
-// --- End Zod Schemas ---
 
 export async function POST(request: NextRequest) {
   try {
     await dbConnect();
-    // TODO: Add authentication and authorization checks here
-    // const session = await getServerSession(authOptions); // Example with NextAuth
-    // if (!session?.user) {
-    //   return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    // }
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
 
     const body = await request.json();
     const validation = createAudienceSegmentSchema.safeParse(body);
@@ -73,7 +73,7 @@ export async function POST(request: NextRequest) {
       name,
       description,
       rules,
-      // createdBy: session.user.id, // If using authentication
+      createdBy: session.user?.id, // If using authentication
     });
 
     await newAudienceSegment.save();
@@ -102,11 +102,16 @@ export async function GET(request: NextRequest) {
   try {
     await dbConnect();
     // TODO: Add authentication if these segments are user-specific or protected
-
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    // Fetch all audience segments, sorted by creation date
+    // and optionally populate the createdBy field if you have it
     const audienceSegments = await AudienceSegmentModel.find({})
-      .sort({ createdAt: -1 }); // Most recent first
-      // .populate('createdBy', 'name email'); // If you have a createdBy field
-
+      .sort({ createdAt: -1 }) // Most recent first
+      .populate('createdBy', 'name email') // If you have a createdBy field
+      .setOptions({ strictPopulate: false });
     return NextResponse.json({ audienceSegments }, { status: 200 });
 
   } catch (error: any) {

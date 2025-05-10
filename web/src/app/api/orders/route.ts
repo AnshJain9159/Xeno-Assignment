@@ -8,9 +8,6 @@ import CustomerModel from '@/models/customer'; // To verify customerId
 import mongoose from 'mongoose';
 import { orderSchema } from '@/lib/validations';
 
-
-
-
 export async function POST(request: NextRequest) {
   try {
     await dbConnect(); // Ensure database connection
@@ -58,10 +55,10 @@ export async function POST(request: NextRequest) {
     // Optionally, you might want to update the customer's totalSpends and visitCount here
     // For simplicity, this is kept separate, but in a real app, you might do it in a transaction.
     // Example:
-    // customer.totalSpends += orderAmount;
-    // customer.visitCount += 1; // Or based on your logic for visits
-    // customer.lastActiveDate = new Date(); // Update last active date
-    // await customer.save();
+    customer.totalSpends += orderAmount;
+    customer.visitCount += 1; // Or based on your logic for visits
+    customer.lastActiveDate = new Date(); // Update last active date
+    await customer.save();
 
     return NextResponse.json(
       { message: "Order created successfully", order: newOrder },

@@ -82,9 +82,9 @@ const buildMongoQuery = (ruleSet: AudienceRuleSet): mongoose.FilterQuery<any> =>
       case 'NOT_EQUALS': mongoOperator = '$ne'; break;
       case 'GREATER_THAN': mongoOperator = '$gt'; break;
       case 'LESS_THAN': mongoOperator = '$lt'; break;
-      case 'CONTAINS': mongoOperator = '$regex'; queryValue = new RegExp(String(value), 'i'); break; // Case-insensitive contains
-      case 'STARTS_WITH': mongoOperator = '$regex'; queryValue = new RegExp('^' + String(value), 'i'); break;
-      case 'ENDS_WITH': mongoOperator = '$regex'; queryValue = new RegExp(String(value) + '$', 'i'); break;
+      case 'CONTAINS': mongoOperator = '$regex'; queryValue = new RegExp(String(value), 'i').toString(); break; // Case-insensitive contains
+      case 'STARTS_WITH': mongoOperator = '$regex'; queryValue = new RegExp('^' + String(value), 'i').toString(); break;
+      case 'ENDS_WITH': mongoOperator = '$regex'; queryValue = new RegExp(String(value) + '$', 'i').toString(); break;
       default: throw new Error(`Unsupported operator: ${operator}`);
     }
     return { [field]: { [mongoOperator]: queryValue } };

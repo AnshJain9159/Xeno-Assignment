@@ -1,5 +1,13 @@
 import mongoose from "mongoose";
 
+import '@/models/user';
+import '@/models/audienceSegment';
+import '@/models/communicationLog';
+import '@/models/customer';
+import '@/models/campaign';
+import '@/models/order';
+
+
 type ConnectionObject = {
     isConnected? : number;
 };
