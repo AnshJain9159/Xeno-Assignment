@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // app/(main)/audiences/create/page.tsx
 "use client";
@@ -9,9 +10,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner"
 import { AudienceRuleSet, IRuleCondition, IRuleGroup } from "@/models/campaign"; // Adjust path as needed
-import { useRouter } from "next/navigation"; // For redirecting
+import { useRouter } from "next/navigation"; 
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { PlusCircle, Trash2, Eye, Send } from "lucide-react";
+import { PlusCircle, Eye, Send } from "lucide-react";
 
 // Default empty rule structure
 const defaultRuleGroup: IRuleGroup = {
@@ -29,10 +30,24 @@ export default function CreateAudiencePage() {
   const [isLoadingPreview, setIsLoadingPreview] = useState(false);
   const [isLoadingCreate, setIsLoadingCreate] = useState(false);
   const [ruleJson, setRuleJson] = useState(JSON.stringify(defaultRuleGroup, null, 2)); // For direct JSON editing
+  const [isSuggestingMessages, setIsSuggestingMessages] = useState(false);
+  const [suggestedMessagesList, setSuggestedMessagesList] = useState<string[]>([]);
+  const [naturalLanguagePrompt, setNaturalLanguagePrompt] = useState("");
+  const [isGeneratingRules, setIsGeneratingRules] = useState(false);
 
   // --- Basic Rule Management Functions (Highly simplified) ---
-  // In a real app, this would be a dynamic UI builder.
-  // For this example, we'll allow editing a JSON representation of the rules.
+  const isValidRuleJson = () => {
+    try {
+      JSON.parse(ruleJson);
+      return true;
+    } catch (e) {
+      toast("Invalid audience rule JSON.");
+      return false;
+    }
+  };
+
+  // In handleCreateCampaign:
+  if (!isValidRuleJson()) return;
 
   const handleRuleJsonChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setRuleJson(e.target.value);
@@ -40,7 +55,7 @@ export default function CreateAudiencePage() {
       const parsedRules = JSON.parse(e.target.value);
       setAudienceRules(parsedRules); // Basic validation, more robust needed
     } catch (error) {
-      // console.error("Invalid JSON for rules");
+      console.error("Invalid JSON for rules");
       // Potentially show an error to the user
     }
   };
@@ -119,6 +134,59 @@ export default function CreateAudiencePage() {
     }
   };
 
+  const handleSuggestMessages = async () => {
+    // Use campaignName as objective, or add a dedicated field
+    const objective = campaignName || "Engage customers"; 
+    // Simple audience description for now, can be improved
+    const audienceDesc = naturalLanguagePrompt || (Object.keys(audienceRules.conditions).length > 0 ? "current segment" : "all customers");
+  
+    setIsSuggestingMessages(true);
+    try {
+      const response = await fetch("/api/ai/suggest-messages", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ objective, audienceDescription: audienceDesc }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to suggest messages.");
+      }
+      setSuggestedMessagesList(data.suggestions);
+      // Open your dialog here to show suggestions
+      toast("Messages suggested!");
+    } catch (error: any) {
+      toast(error.message);
+    } finally {
+      setIsSuggestingMessages(false);
+    }
+  };
+
+  const handleGenerateRulesWithAI = async () => {
+    if (!naturalLanguagePrompt.trim()) {
+      toast("Please enter a prompt for the AI.");
+      return;
+    }
+    setIsGeneratingRules(true);
+    try {
+      const response = await fetch("/api/ai/generate-segment-rules", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ prompt: naturalLanguagePrompt }),
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.message || "Failed to generate rules with AI.");
+      }
+      setAudienceRules(data.rules); // Assuming setAudienceRules updates your main rules state
+      setRuleJson(JSON.stringify(data.rules, null, 2)); // Update the JSON textarea
+      toast("Audience rules generated and applied!");
+    } catch (error: any) {
+      toast(error.message);
+    } finally {
+      setIsGeneratingRules(false);
+    }
+  };
+
   return (
     <div className="container mx-auto p-4 md:p-8">
       <Card>
@@ -137,7 +205,7 @@ export default function CreateAudiencePage() {
             />
           </div>
 
-          <div>
+          <div className="space-y-2">
             <Label htmlFor="messageTemplate">Message Template</Label>
             <Textarea
               id="messageTemplate"
@@ -149,6 +217,19 @@ export default function CreateAudiencePage() {
             <p className="text-sm text-muted-foreground mt-1">
               Available placeholders: {"{{name}}"}, {"{{email}}"}, {"{{totalSpends}}"}, {"{{visitCount}}"}
             </p>
+            <Button onClick={handleSuggestMessages} disabled={isSuggestingMessages}>
+              {isSuggestingMessages ? "Generating..." : "Suggest Messages"}
+            </Button>
+            {suggestedMessagesList.length > 0 && (
+              <div className="mt-4 space-y-2">
+                  <h4 className="font-medium">Suggested Messages:</h4>
+                    <ul className="list-disc pl-5 space-y-1">
+                      {suggestedMessagesList.map((msg, idx) => (
+                        <li key={idx} className="text-sm">{msg}</li>
+                      ))}
+                    </ul>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -172,6 +253,19 @@ export default function CreateAudiencePage() {
             {/* <p className="text-xs text-muted-foreground mt-1">
                 Example: `{"field"}: {"lastActiveDate", "operator": "OLDER_THAN_DAYS", "value": 90, "dataType": "date"}`
             </p> */}
+          </div>
+
+          <div>
+            <Label htmlFor="aiPrompt">Generate Audience Rules with AI</Label>
+              <Input
+                id="aiPrompt"
+                value={naturalLanguagePrompt}
+                onChange={(e) => setNaturalLanguagePrompt(e.target.value)}
+                placeholder="e.g., customers who spent over 1000 and are inactive for 90 days"
+              />
+              <Button onClick={handleGenerateRulesWithAI} disabled={isGeneratingRules} className="mt-2">
+                {isGeneratingRules ? "Generating..." : "Generate with AI"}
+              </Button>
           </div>
 
           {previewSize !== null && (

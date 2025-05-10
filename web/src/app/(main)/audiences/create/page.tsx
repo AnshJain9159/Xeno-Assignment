@@ -6,6 +6,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent } from "@/components/ui/card";
+import { toast } from "sonner";
+import { Label } from "@/components/ui/label";
+import { AudienceRuleSet, IRuleGroup } from "@/models/campaign";
+
+const defaultRuleGroup: IRuleGroup = {
+  logicalOperator: "AND",
+  conditions: [],
+  groups: [],
+};
 
 export default function CreateAudiencePage() {
   const [name, setName] = useState("");
@@ -15,7 +24,43 @@ export default function CreateAudiencePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [naturalLanguagePrompt, setNaturalLanguagePrompt] = useState("");
+  const [isGeneratingRules, setIsGeneratingRules] = useState(false);
+  const [ruleJson, setRuleJson] = useState(JSON.stringify(defaultRuleGroup, null, 2)); 
+  const [audienceRules, setAudienceRules] = useState<AudienceRuleSet>({ ...defaultRuleGroup });
+
   const router = useRouter();
+
+  const handleGenerateRulesWithAI = async () => {
+  if (!naturalLanguagePrompt.trim()) {
+    toast("Please enter a prompt for the AI.");
+    return;
+  }
+  setIsGeneratingRules(true);
+  try {
+    const response = await fetch("/api/ai/generate-segment-rules", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt: naturalLanguagePrompt }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to generate rules with AI.");
+    }
+    
+    // Update all three states with the new rules
+    setAudienceRules(data.rules);
+    const formattedJson = JSON.stringify(data.rules, null, 2);
+    setRuleJson(formattedJson);
+    setRules(formattedJson); // Add this line to update the textarea
+    
+    toast.success("Audience rules generated and applied!");
+  } catch (error: any) {
+    toast.error(error.message);
+  } finally {
+    setIsGeneratingRules(false);
+  }
+};
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -90,15 +135,27 @@ export default function CreateAudiencePage() {
                 required
                 rows={8}
                 placeholder={`{
-  "logicalOperator": "AND",
-  "conditions": [
-    { "field": "totalSpends", "operator": "GREATER_THAN", "value": 1000 }
-  ]
-}`}
+                  "logicalOperator": "AND",
+                  "conditions": [
+                    { "field": "totalSpends", "operator": "GREATER_THAN", "value": 1000 }
+                  ]
+                }`}
               />
               <p className="text-xs text-muted-foreground mt-1">
                 Enter rules as JSON. See docs or ask admin for help.
               </p>
+            </div>
+            <div>
+              <Label htmlFor="aiPrompt">Generate Audience Rules with AI</Label>
+              <Input
+                id="aiPrompt"
+                value={naturalLanguagePrompt}
+                onChange={(e) => setNaturalLanguagePrompt(e.target.value)}
+                placeholder="e.g., customers who spent over 1000 and are inactive for 90 days"
+              />
+              <Button onClick={handleGenerateRulesWithAI} disabled={isGeneratingRules} className="mt-2">
+                {isGeneratingRules ? "Generating..." : "Generate with AI"}
+              </Button>
             </div>
             {error && <div className="text-red-500 text-sm">{error}</div>}
             {success && <div className="text-green-600 text-sm">{success}</div>}

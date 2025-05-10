@@ -40,7 +40,7 @@ export function Footer() {
           </div>
 
           <div className="text-sm text-muted-foreground">
-            Powered by Fal API (Hunyuan-Video Model) • © {new Date().getFullYear()} Xeno-CRM • Made with ❤️ by Ansh Jain
+            Powered by Groq API (Fast AI Inference) • © {new Date().getFullYear()} Xeno-CRM • Made with ❤️ by Ansh Jain
           </div>
         </div>
       </div>

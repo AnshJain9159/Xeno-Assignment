@@ -1,26 +1,31 @@
-import { NextRequest, NextResponse } from "next/server";
-import dbConnect from "@/lib/dbConnect";
-import CommunicationLogModel from "@/models/communicationLog";
-import { auth } from "@/auth";
+// app/api/campaigns/[campaignId]/logs/route.ts
+import { NextRequest, NextResponse } from 'next/server';
+import dbConnect from '@/lib/dbConnect'; 
+import CommunicationLogModel from '@/models/communicationLog'; 
+import mongoose from 'mongoose';
 
 export async function GET(
   request: NextRequest,
-  context: { params: { campaignId: string } }
+  { params }: { params: { campaignId: string } }
 ) {
-  await dbConnect();
-    
-  const session = await auth();
-    if (!session) {
-        return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+  const { campaignId } =await params;
 
-  const { params } = await context;
-  const { campaignId } = params;
+  if (!campaignId || !mongoose.Types.ObjectId.isValid(campaignId)) {
+    return NextResponse.json({ message: 'Invalid Campaign ID format' }, { status: 400 });
+  }
 
   try {
-    const logs = await CommunicationLogModel.find({ campaignId }).lean();
+    await dbConnect();
+    console.log(`Fetching logs for campaign ID: ${campaignId}`); 
+
+    const logs = await CommunicationLogModel.find({ campaignId })
+      .sort({ createdAt: -1 }) // Show newest logs first
+      .populate('customerId', 'name email'); 
+
     return NextResponse.json({ logs }, { status: 200 });
+
   } catch (error: any) {
-    return NextResponse.json({ message: "Error fetching logs", error: error.message }, { status: 500 });
+    console.error(`Error fetching logs for campaign ${campaignId}:`, error);
+    return NextResponse.json({ message: 'Failed to fetch logs', error: error.message }, { status: 500 });
   }
 }

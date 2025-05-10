@@ -31,6 +31,7 @@ export interface ICampaign extends Document {
   createdBy: Schema.Types.ObjectId; // Reference to the User who created it (from NextAuth)
   createdAt: Date;
   updatedAt: Date;
+  failureReason: string;
 }
 
 // Mongoose schema for Campaign

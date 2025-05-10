@@ -62,10 +62,6 @@ export default function ListAudiencesPage() {
         <h1 className="text-3xl font-bold tracking-tight flex items-center">
           <Users className="mr-3 h-8 w-8" /> Saved Audience Segments
         </h1>
-        {/* This button should ideally link to a page for creating new audience segments.
-          The current `audiences/create` page is for creating campaigns.
-          For now, it links there, but you might want a dedicated segment creation page.
-        */}
         <Link href="/audiences/create"> 
           <Button>
             <PlusCircle className="mr-2 h-4 w-4" /> Create New Segment/Campaign

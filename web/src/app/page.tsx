@@ -57,7 +57,7 @@ export default function LandingPage() {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="w-full py-12 md:py-20 lg:py-28">
+        <section id="features" className="w-full py-12 md:py-16 lg:py-24">
           <div className="container px-4 mx-auto md:px-6">
             <div className="flex flex-col items-center text-center mb-12 md:mb-16">
               <div className="inline-flex items-center rounded-full bg-primary/10 px-3 py-1 text-sm font-medium text-primary mb-4">
@@ -247,7 +247,7 @@ export default function LandingPage() {
         </section>
 
         {/* CTA Section */}
-        <section className="w-full py-12 md:py-20 lg:py-26 relative overflow-hidden">
+        <section className="w-full py-12 md:py-18 lg:py-24 relative overflow-hidden">
           <div className="absolute inset-0 bg-primary/5"></div>
           <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
           <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-primary/10 rounded-full blur-3xl"></div>
@@ -265,9 +265,6 @@ export default function LandingPage() {
                     <Link href="/sign-in" className="gap-2">
                       Get Started <ArrowRight className="h-4 w-4" />
                     </Link>
-                  </Button>
-                  <Button variant="outline" size="lg" className="text-foreground border-border hover:bg-muted">
-                    <Link href="/contact">Contact Sales</Link>
                   </Button>
                 </div>
               </div>

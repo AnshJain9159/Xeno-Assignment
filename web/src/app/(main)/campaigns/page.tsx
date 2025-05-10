@@ -97,7 +97,7 @@ export default function CampaignsPage() {
               <TableRow key={campaign._id as string}>
                 <TableCell className="font-medium">{campaign.name}</TableCell>
                 <TableCell>
-                  <Badge variant={getStatusBadgeVariant(campaign.status)}>
+                  <Badge variant={getStatusBadgeVariant(campaign.status) as "default" | "destructive" | "outline" | "secondary"}>
                     {campaign.status}
                   </Badge>
                 </TableCell>

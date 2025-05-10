@@ -143,7 +143,7 @@ export async function POST(request: NextRequest) {
       audienceRules,
       messageTemplate,
       audienceSize,
-      status: audienceSize > 0 ? 'SENDING' : 'DRAFT', // Or 'SCHEDULED' if you implement scheduling
+      status: 'DRAFT', // Always DRAFT on creation! Delivery is triggered by the deliver route.
       createdBy: userId, // From session
     });
     await newCampaign.save();
