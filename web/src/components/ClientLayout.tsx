@@ -6,8 +6,8 @@ import {Footer} from "@/components/footer";
 
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
-  const hideNav = ['/sign-in', '/sign-up'].includes(pathname);
-  const hideFoot = ['/sign-in', '/sign-up'].includes(pathname);
+  const hideNav = ['/sign-in', '/sign-up','/too-fast'].includes(pathname);
+  const hideFoot = ['/sign-in', '/sign-up','/too-fast'].includes(pathname);
 
   return (
     <>

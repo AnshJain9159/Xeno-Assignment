@@ -26,6 +26,7 @@ This project demonstrates customer segmentation, campaign management, order inge
 ```bash
 git clone https://github.com/AnshJain9159/Xeno-Assignment.git
 cd Xeno-Assignment
+cd web
 ```
 
 ### 2. Install dependencies
@@ -40,13 +41,15 @@ Create a `.env.local` file in the `web` directory:
 
 ```
 NEXTAUTH_SECRET="" # Added by `npx auth`.
-AUTH_GOOGLE_ID=
-AUTH_GOOGLE_SECRET=
+AUTH_GOOGLE_ID="your-google-client-id"
+AUTH_GOOGLE_SECRET="your-google-client-secret"
 MONGODB_URI="mongodb://localhost:27017/Xeno"
 CALLBACK_URL="http://localhost:3000/api/auth/callback/google"
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 NEXTAUTH_URL="http://localhost:3000"
-GROQ_API_KEY=
+GROQ_API_KEY="your-groq-api-key"
+UPSTASH_REDIS_REST_URL="https://your-upstash-url" 
+UPSTASH_REDIS_REST_TOKEN="your-token"
 ```
 
 ### 4. Run the development server
@@ -58,16 +61,24 @@ npm run dev
 Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
+## Architecture Diagram
 
+![Architecture Diagram](https://raw.githubusercontent.com/AnshJain9159/Xeno-Assignment/main/architecture.png)
+---
 ## API Endpoints
 
+- `/api/auth` - Authentication routes (sign up, sign in, sign out)
+- `/api/ai/generate-segment-rules` - AI integration for audience rules.
+- `/api/ai/suggest-messages` - AI integration for message templates.
 - `/api/customers` - Manage customers
+- `/api/customers/bulk-upload` - Upload bulk customers via CSV
 - `/api/orders` - Manage orders (supports bulk upload)
+- `/api/orders/bulk-upload` - Upload bulk orders via CSV
 - `/api/audiences` - Audience segment CRUD
 - `/api/campaigns` - Campaign CRUD and delivery
 - `/api/dummy-vendor/send` - Simulated vendor API
 - `/api/webhooks/delivery-receipts` - Webhook for vendor delivery receipts
-
+- `/api/swagger` - Swagger UI for API documentation 
 ---
 
 ## Bulk Upload
@@ -97,6 +108,8 @@ Visit [http://localhost:3000](http://localhost:3000) in your browser.
 - **Authentication:** NextAuth.js
 - **AI Integration:** GROQ AI Inference
 - **Deployment:** Vercel
+- **API Documentation** Swagger UI
+- **Rate Limiting** Upstash Redis  
 
 
 ## Contributing
@@ -109,24 +122,20 @@ Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## License
-
-MIT
-
----
-
 ## Credits
 
 - [Next.js](https://nextjs.org/)
 - [MongoDB](https://www.mongodb.com/)
 - [NextAuth.js](https://next-auth.js.org/)
 - [shadcn/ui](https://ui.shadcn.com/)
-- [OpenAI](https://openai.com/)
+- [Groq AI Inference](https://groq.dev/)
+- [Vercel](https://vercel.com/)
+- [Upstash Redis](https://upstash.com/)
 - [Swagger UI](https://swagger.io/tools/swagger-ui/)
-
+- [V0.dev](https://v0.dev/)
 ---
 
 ## Contact
 
-Made with ❤️ by Ansh Jain  
+Made by Ansh Jain  
 [GitHub](https://github.com/AnshJain9159/Xeno-Assignment)

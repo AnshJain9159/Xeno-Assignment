@@ -2,9 +2,17 @@ import { NextResponse } from "next/server";
 import UserModel from "@/models/user";
 import { signUpSchema } from "@/lib/validations";
 import { hash } from "bcryptjs";
+import { headers } from "next/headers";
+import ratelimit from "@/lib/rateLimit";
+import { redirect } from "next/navigation";
 
 export async function POST(req: Request) {
   try {
+    const ip = (await headers()).get("x-forwarded-for") || "127.0.0.1";
+    const { success } = await ratelimit.limit(ip);
+
+    if (!success) return redirect("/too-fast");
+
     const body = await req.json();
     const result = signUpSchema.safeParse(body);
     if (!result.success) {
