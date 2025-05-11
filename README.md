@@ -4,7 +4,9 @@ A full-stack, AI-powered Customer Relationship Management (CRM) platform built w
 This project demonstrates customer segmentation, campaign management, order ingestion, and vendor integration with webhooks.
 
 ---
-
+### 📽️Video Link: https://youtu.be/1FLkMiKxVgk
+### 🔗Deployed Link: https://smartsphere.vercel.app
+---
 ## Features
 
 - **Authentication:** Secure sign-up/sign-in with NextAuth (Google & credentials)
@@ -63,7 +65,6 @@ Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 ## Architecture Diagram
-
 ![Smart-Sphere CRM High-Level Architecture](./architecture.png)
 ---
 ## API Endpoints
@@ -140,3 +141,4 @@ Visit [http://localhost:3000](http://localhost:3000) in your browser.
 
 Made by Ansh Jain  
 [GitHub](https://github.com/AnshJain9159/Xeno-Assignment)
+[LinkedIn](https://www.linkedin.com/in/ansh-jain-78986b242/)
