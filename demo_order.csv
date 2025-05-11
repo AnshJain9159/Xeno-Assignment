@@ -1,0 +1,11 @@
+orderId,customerEmail,orderAmount,orderDate
+ORD001,john@example.com,150.50,2024-06-01T10:00:00Z
+ORD002,jane@example.com,200.00,2024-06-02T11:30:00Z
+ORD003,alice@example.com,350.75,2024-06-03T14:20:00Z
+ORD004,bob@example.com,120.00,2024-06-04T09:10:00Z
+ORD005,charlie@example.com,500.00,2024-06-05T13:00:00Z
+ORD006,diana@example.com,270.25,2024-06-06T15:45:00Z
+ORD007,ethan@example.com,400.10,2024-06-07T17:00:00Z
+ORD008,fiona@example.com,180.40,2024-06-08T12:25:00Z
+ORD009,george@example.com,220.60,2024-06-09T18:30:00Z
+ORD010,hannah@example.com,310.00,2024-06-10T16:15:00Z
