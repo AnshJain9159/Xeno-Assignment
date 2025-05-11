@@ -56,7 +56,7 @@ export default function SignUp() {
       if (signInResult?.error) {
         router.push("/sign-in")
       } else {
-        router.push("/dashboard")
+        router.push("/")
       }
     } catch {
       setError("Something went wrong")

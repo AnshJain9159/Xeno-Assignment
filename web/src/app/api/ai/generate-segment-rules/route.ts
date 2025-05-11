@@ -3,6 +3,10 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 import Groq from 'groq-sdk';
+import { auth } from '@/auth';
+import { headers } from 'next/headers';
+import ratelimit from '@/lib/rateLimit';
+import { redirect } from 'next/navigation';
 
 const ruleConditionSchema = z.object({
   field: z.enum(['totalSpends', 'visitCount', 'lastActiveDate', 'name', 'email']),
@@ -110,11 +114,22 @@ function getRuleGenerationSystemPrompt(): string {
 
 
 export async function POST(request: NextRequest) {
+
   if (!groq) {
     return NextResponse.json({ message: "AI service not configured. GROQ_API_KEY missing." }, { status: 503 });
   }
 
+  const session = await auth();
+  if (!session) {
+    return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+  }
+
   try {
+    
+    const ip = (await headers()).get("x-forwarded-for") || "127.0.0.1";
+    const { success } = await ratelimit.limit(ip);
+    if (!success) return redirect("/too-fast");
+
     const body = await request.json();
     const validation = generateRulesRequestSchema.safeParse(body);
 

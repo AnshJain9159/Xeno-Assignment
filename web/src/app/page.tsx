@@ -262,7 +262,7 @@ export default function LandingPage() {
                 </p>
                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
                   <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
-                    <Link href="/sign-in" className="gap-2">
+                    <Link href="/campaigns" className="gap-2">
                       Get Started <ArrowRight className="h-4 w-4" />
                     </Link>
                   </Button>

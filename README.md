@@ -1,6 +1,6 @@
-# Xeno-CRM (SDE Internship Assignment)
+# Smart-Sphere ( Xeno AI SDE Internship Assignment)
 
-A full-stack, AI-powered Customer Relationship Management (CRM) platform built with Next.js 14 (App Router), MongoDB, NextAuth, shadcn/ui, and OpenAI.  
+A full-stack, AI-powered Customer Relationship Management (CRM) platform built with Next.js 14 (App Router), MongoDB, NextAuth, shadcn/ui, and Groq.  
 This project demonstrates customer segmentation, campaign management, order ingestion, and vendor integration with webhooks.
 
 ---
@@ -15,8 +15,9 @@ This project demonstrates customer segmentation, campaign management, order inge
 - **Vendor Simulation:** Dummy vendor API with delivery receipts via webhook
 - **AI Integration:** Generate audience rules and message templates with OpenAI
 - **Dashboard:** View campaign logs, statuses, and analytics
-- **Modern UI:** Built with shadcn/ui and Tailwind CSS
-
+- **Modern UI:** Built with shadcn/ui and Tailwind CSS and V0.dev
+- **API Documentation:** Swagger UI for easy API exploration
+- **Rate Limiting:** Upstash Redis for rate limiting
 ---
 
 ## Getting Started
@@ -63,7 +64,7 @@ Visit [http://localhost:3000](http://localhost:3000) in your browser.
 ---
 ## Architecture Diagram
 
-![Architecture Diagram](https://raw.githubusercontent.com/AnshJain9159/Xeno-Assignment/main/architecture.png)
+![Smart-Sphere CRM High-Level Architecture](./architecture.png)
 ---
 ## API Endpoints
 

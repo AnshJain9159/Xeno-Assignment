@@ -87,13 +87,13 @@ export function Navbar() {
                 <>
                   <DropdownMenuItem
                     className="cursor-pointer"
-                    onClick={() => signIn(undefined, { callbackUrl: "/dashboard" })}
+                    onClick={() => signIn(undefined, { callbackUrl: "/" })}
                   >
                     Sign In
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     className="cursor-pointer"
-                    onClick={() => signIn(undefined, { callbackUrl: "/dashboard" })}
+                    onClick={() => signIn(undefined, { callbackUrl: "/" })}
                   >
                     Sign Up
                   </DropdownMenuItem>

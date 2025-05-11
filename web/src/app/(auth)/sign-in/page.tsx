@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import {  useRouter } from "next/navigation"
+import {   useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
 import Link from "next/link"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Separator } from "@/components/ui/separator"
 import { ArrowLeft } from "lucide-react"
-
 
 export default function SignIn() {
   const [loading, setLoading] = useState(false)
