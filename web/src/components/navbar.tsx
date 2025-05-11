@@ -12,10 +12,10 @@ export function Navbar() {
 
   // Main section pages
   const mainPages = [
-    // { href: "/", label: "Home" },
     { href: "/audiences", label: "Audiences" },
     { href: "/campaigns", label: "Campaigns" },
     { href: "/ingest-data", label: "Ingest Data" },
+    { href: "/api-docs", label: "API Documentation" },
   ];
 
   return (

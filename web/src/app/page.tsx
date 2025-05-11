@@ -29,13 +29,13 @@ export default function LandingPage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto justify-center">
                 <Button asChild size="lg" className="bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
-                  <Link href="/sign-in" className="gap-2">
+                  <Link href="/campaigns" className="gap-2">
                     Get Started <ArrowRight className="h-4 w-4" />
                   </Link>
                 </Button>
                 <Button variant="outline" size="lg" className="text-foreground border-border hover:bg-muted">
-                  <Link href="#features" className="gap-2">
-                    Explore Features <ChevronRight className="h-4 w-4" />
+                  <Link href="api-docs" className="gap-2">
+                    API Documentation <ChevronRight className="h-4 w-4" />
                   </Link>
                 </Button>
               </div>

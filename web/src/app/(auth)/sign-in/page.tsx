@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { redirect, useRouter } from "next/navigation"
+import {  useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
 import Link from "next/link"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"

@@ -7,11 +7,17 @@ import OrderModel from '@/models/order';
 import CustomerModel from '@/models/customer'; // To verify customerId
 import mongoose from 'mongoose';
 import { orderSchema } from '@/lib/validations';
+import { auth } from '@/auth';
 
 export async function POST(request: NextRequest) {
   try {
     await dbConnect(); // Ensure database connection
-
+    
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    
     const body = await request.json();
     const validation = orderSchema.safeParse(body);
 

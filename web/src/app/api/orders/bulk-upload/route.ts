@@ -5,6 +5,7 @@ import OrderModel from '@/models/order';
 import CustomerModel from '@/models/customer';
 import { z } from 'zod';
 import Papa from 'papaparse';
+import { auth } from '@/auth';
 
 // Zod schema for a single order row from CSV
 const csvOrderSchema = z.object({
@@ -31,6 +32,10 @@ interface BulkUploadResult {
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
     await dbConnect();
 
     const formData = await request.formData();

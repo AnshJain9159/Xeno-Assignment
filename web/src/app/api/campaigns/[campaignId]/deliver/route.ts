@@ -30,7 +30,6 @@ export async function POST(
   console.log(`[Deliver API] Received request for campaignId: ${campaignId}`);
 
   if (!process.env.NEXT_PUBLIC_APP_URL) {
-    // console.error("[Deliver API] CRITICAL: NEXT_PUBLIC_APP_URL is not set in environment variables.");
     return NextResponse.json({ message: "Server configuration error: App URL not set." }, { status: 500 });
   }
   console.log(`[Deliver API] DUMMY_VENDOR_API_URL: ${DUMMY_VENDOR_API_URL}`);
@@ -50,8 +49,7 @@ export async function POST(
     // console.log("[Deliver API] Checking authentication...");
     const session = await auth();
 
-    if (!session || !session.user) { // Check for session.user as well
-      // console.log("[Deliver API] Unauthorized access attempt.");
+    if (!session || !session.user) { 
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
     console.log("[Deliver API] User authenticated:", session.user.email);
@@ -77,7 +75,7 @@ export async function POST(
     campaign.status = 'SENDING';
     campaign.sentCount = 0;
     campaign.failedCount = 0;
-    campaign.audienceSize = 0; // Reset audience size here or before customer fetch? Let's set it after fetching.
+    campaign.audienceSize = 0; 
     await campaign.save();
     console.log(`[Deliver API] Campaign ${campaignId} status updated.`);
 
@@ -87,8 +85,8 @@ export async function POST(
         mongoQuery = buildMongoQuery(campaign.audienceRules);
     } catch (queryBuilderError: any) {
         console.error(`[Deliver API] Error in buildMongoQuery for campaign ${campaignId}:`, queryBuilderError.message);
-        campaign.status = 'FAILED'; // Mark campaign as failed if rules can't be processed
-        campaign.failureReason = "Error processing audience rules."; // Add a failure reason field to CampaignModel if desired
+        campaign.status = 'FAILED'; 
+        campaign.failureReason = "Error processing audience rules."; 
         await campaign.save();
         return NextResponse.json({ message: "Error processing audience rules.", error: queryBuilderError.message }, { status: 500 });
     }

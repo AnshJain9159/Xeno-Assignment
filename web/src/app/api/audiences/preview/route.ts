@@ -3,12 +3,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect'; 
 import CustomerModel from '@/models/customer';
-import { AudienceRuleSet, IRuleCondition, IRuleGroup } from '@/models/campaign'; // Assuming Campaign.ts exports these
+import { AudienceRuleSet, IRuleCondition, IRuleGroup } from '@/models/campaign'; 
 import { z } from 'zod';
 import mongoose from 'mongoose';
 import { baseRuleGroupSchema } from '@/lib/validations';
 
-// --- Zod Schemas for Rule Validation ---
 
 type RuleGroupInput = z.infer<typeof baseRuleGroupSchema> & {
   groups?: RuleGroupInput[];
@@ -18,7 +17,6 @@ const ruleGroupSchema: z.ZodType<RuleGroupInput> = baseRuleGroupSchema.extend({
 });
 
 const audienceRuleSetSchema: z.ZodType<AudienceRuleSet> = ruleGroupSchema;
-// --- End Zod Schemas ---
 
 
 // Helper function to build MongoDB query from rules

@@ -7,7 +7,7 @@ import CampaignModel, { AudienceRuleSet, IRuleGroup, IRuleCondition } from '@/mo
 import CustomerModel, { ICustomer } from '@/models/customer';
 import CommunicationLogModel from '@/models/communicationLog';
 import { z } from 'zod';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { auth } from "@/auth";
 import { baseRuleGroupSchema } from '@/lib/validations';
 
@@ -156,16 +156,14 @@ export async function POST(request: NextRequest) {
 
         // Fetch the logs you just created (to get their _id)
         const logs = await CommunicationLogModel.find({ campaignId: newCampaign._id });
-
         for (const log of logs) {
-          const customer = customersInSegment.find(c => c._id.equals(log.customerId));
+          const customer = customersInSegment.find(c => (c._id as Types.ObjectId).equals(log.customerId));
           if (!customer) continue;
-        
           const payload = {
-            customerId: customer._id.toString(),
+            customerId: (customer._id as Types.ObjectId).toString(),
             customerEmail: customer.email,
             message: log.message,
-            communicationLogId: log._id.toString(),
+            communicationLogId: (log._id as Types.ObjectId).toString(),
             callbackUrl: DELIVERY_RECEIPT_CALLBACK_URL,
           };
         

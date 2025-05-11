@@ -5,10 +5,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect'; 
 import CustomerModel from '@/models/customer';
 import { customerSchema } from '@/lib/validations';
+import { auth } from '@/auth';
 
 
 export async function POST(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    
     await dbConnect(); // Ensure database connection
 
     const body = await request.json();
@@ -66,7 +72,13 @@ export async function POST(request: NextRequest) {
 
 export async function GET(request: NextRequest) {
   try {
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    
     await dbConnect();
+
     const customers = await CustomerModel.find({}).sort({ createdAt: -1 });
     return NextResponse.json({ customers }, { status: 200 });
   } catch (error: any) {
