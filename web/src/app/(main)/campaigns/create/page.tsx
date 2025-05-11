@@ -145,14 +145,15 @@ export default function CreateCampaignPage() {
         body: JSON.stringify({ rules: audienceRules }),
       });
       const data = await response.json();
+      console.log("Preview response:", data)
       if (!response.ok) {
         throw new Error(data.message || "Failed to preview audience");
       }
 
       // For demo purposes, generate a random audience size
       // const randomSize = Math.floor(Math.random() * 10000) + 500
-      setPreviewSize(data.size) // Use the size from the API response
-      toast.success(`Estimated audience size: ${data.size}`)
+      setPreviewSize(typeof data.audienceSize === "number" ? data.audienceSize : 0) // Use the size from the API response
+      toast.success(`Estimated audience size: ${data.audienceSize}`)
     } catch (error: any) {
       console.error("Preview error:", error)
       toast.error(error.message)
@@ -700,16 +701,16 @@ export default function CreateCampaignPage() {
                   {isLoadingPreview && <RefreshCw className="h-4 w-4 animate-spin text-primary" />}
                 </div>
                 {previewSize !== null ? (
-                  <div className="text-center py-4">
-                    <div className="text-3xl font-bold mb-1">{previewSize.toString()}</div>
-                    <p className="text-xs text-muted-foreground">Estimated recipients</p>
-                  </div>
-                ) : (
-                  <div className="text-center py-4 bg-muted/20 rounded-md border border-dashed">
-                    <BarChart2 className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
-                    <p className="text-sm text-muted-foreground">Click &quot;Preview Audience Size&quot; to calculate</p>
-                  </div>
-                )}
+              <div className="text-center py-4">
+                <div className="text-3xl font-bold mb-1">{typeof previewSize === "number" ? previewSize.toString() : "0"}</div>
+                <p className="text-xs text-muted-foreground">Estimated recipients</p>
+              </div>
+            ) : (
+              <div className="text-center py-4 bg-muted/20 rounded-md border border-dashed">
+                <BarChart2 className="h-8 w-8 text-muted-foreground/50 mx-auto mb-2" />
+                <p className="text-sm text-muted-foreground">Click &quot;Preview Audience Size&quot; to calculate</p>
+              </div>
+            )}
               </div>
             </CardContent>
             <CardFooter className="flex flex-col space-y-4">
