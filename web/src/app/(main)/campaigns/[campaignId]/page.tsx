@@ -276,7 +276,7 @@ export default function CampaignDetailPage() {
                   <h3 className="text-sm font-medium text-muted-foreground">Audience Size</h3>
                   <Users className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                 </div>
-                <div className="text-3xl font-bold">{campaign.audienceSize?.toLocaleString() || 0}</div>
+                <div className="text-3xl font-bold">{campaign.audienceSize?.toString() || 0}</div>
                 <p className="text-xs text-muted-foreground mt-1">Total targeted customers</p>
               </CardContent>
             </Card>
@@ -287,7 +287,7 @@ export default function CampaignDetailPage() {
                   <h3 className="text-sm font-medium text-muted-foreground">Messages Sent</h3>
                   <MessageSquare className="h-5 w-5 text-green-600 dark:text-green-400" />
                 </div>
-                <div className="text-3xl font-bold">{campaign.sentCount?.toLocaleString() || 0}</div>
+                <div className="text-3xl font-bold">{campaign.sentCount?.toString() || 0}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   {(((campaign.sentCount || 0) / (campaign.audienceSize || 1)) * 100).toFixed(1)}% of audience
                 </p>
@@ -300,7 +300,7 @@ export default function CampaignDetailPage() {
                   <h3 className="text-sm font-medium text-muted-foreground">Failed Deliveries</h3>
                   <AlertTriangle className="h-5 w-5 text-red-600 dark:text-red-400" />
                 </div>
-                <div className="text-3xl font-bold">{campaign.failedCount?.toLocaleString() || 0}</div>
+                <div className="text-3xl font-bold">{campaign.failedCount?.toString() || 0}</div>
                 <p className="text-xs text-muted-foreground mt-1">
                   {(((campaign.failedCount || 0) / (campaign.audienceSize || 1)) * 100).toFixed(1)}% failure rate
                 </p>
@@ -318,7 +318,7 @@ export default function CampaignDetailPage() {
                 </div>
                 <Progress value={progressPercentage} className="h-2" />
                 <p className="text-xs text-muted-foreground mt-2">
-                  {campaign.sentCount?.toLocaleString() || 0} of {campaign.audienceSize?.toLocaleString() || 0} messages
+                  {campaign.sentCount?.toString() || 0} of {campaign.audienceSize?.toString() || 0} messages
                   sent
                 </p>
               </CardContent>

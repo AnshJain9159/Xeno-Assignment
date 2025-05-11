@@ -126,7 +126,7 @@ export default function CampaignsPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <div className="text-2xl font-bold">{campaignStats.totalAudience.toLocaleString()}</div>
+              <div className="text-2xl font-bold">{campaignStats.totalAudience.toString()}</div>
               <Users className="h-5 w-5 text-green-600 dark:text-green-400" />
             </div>
             <p className="text-xs text-muted-foreground mt-1">Across all campaigns</p>
@@ -139,7 +139,7 @@ export default function CampaignsPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <div className="text-2xl font-bold">{campaignStats.totalSent.toLocaleString()}</div>
+              <div className="text-2xl font-bold">{campaignStats.totalSent.toString()}</div>
               <SendIcon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -154,7 +154,7 @@ export default function CampaignsPage() {
           </CardHeader>
           <CardContent>
             <div className="flex items-center justify-between">
-              <div className="text-2xl font-bold">{campaignStats.totalFailed.toLocaleString()}</div>
+              <div className="text-2xl font-bold">{campaignStats.totalFailed.toString()}</div>
               <AlertCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -254,9 +254,9 @@ export default function CampaignsPage() {
                           {campaign.status}
                         </Badge>
                       </TableCell>
-                      <TableCell className="text-right">{campaign.audienceSize?.toLocaleString() || 0}</TableCell>
-                      <TableCell className="text-right">{campaign.sentCount?.toLocaleString() || 0}</TableCell>
-                      <TableCell className="text-right">{campaign.failedCount?.toLocaleString() || 0}</TableCell>
+                      <TableCell className="text-right">{campaign.audienceSize?.toString() || 0}</TableCell>
+                      <TableCell className="text-right">{campaign.sentCount?.toString() || 0}</TableCell>
+                      <TableCell className="text-right">{campaign.failedCount?.toString() || 0}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">
                         {format(new Date(campaign.createdAt), "MMM d, yyyy")}
                       </TableCell>
@@ -317,15 +317,15 @@ export default function CampaignsPage() {
                     <div className="grid grid-cols-3 gap-2 mb-4">
                       <div className="text-center p-2 bg-muted/20 rounded-md">
                         <p className="text-xs text-muted-foreground">Audience</p>
-                        <p className="font-medium">{campaign.audienceSize?.toLocaleString() || 0}</p>
+                        <p className="font-medium">{campaign.audienceSize?.toString() || 0}</p>
                       </div>
                       <div className="text-center p-2 bg-muted/20 rounded-md">
                         <p className="text-xs text-muted-foreground">Sent</p>
-                        <p className="font-medium">{campaign.sentCount?.toLocaleString() || 0}</p>
+                        <p className="font-medium">{campaign.sentCount?.toString() || 0}</p>
                       </div>
                       <div className="text-center p-2 bg-muted/20 rounded-md">
                         <p className="text-xs text-muted-foreground">Failed</p>
-                        <p className="font-medium">{campaign.failedCount?.toLocaleString() || 0}</p>
+                        <p className="font-medium">{campaign.failedCount?.toString() || 0}</p>
                       </div>
                     </div>
                     <Button variant="outline" size="sm" asChild className="w-full">

@@ -361,7 +361,7 @@ export default function CreateAudiencePage() {
             <CardContent>
               {estimatedAudienceSize !== null ? (
                 <div className="text-center py-6">
-                  <div className="text-4xl font-bold mb-2">{estimatedAudienceSize.toLocaleString()}</div>
+                  <div className="text-4xl font-bold mb-2">{estimatedAudienceSize.toString()}</div>
                   <p className="text-sm text-muted-foreground">Estimated customers in this segment</p>
                   <div className="mt-4 flex justify-center">
                     <Badge variant="outline" className="text-xs">

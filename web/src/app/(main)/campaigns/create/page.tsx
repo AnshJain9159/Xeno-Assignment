@@ -701,7 +701,7 @@ export default function CreateCampaignPage() {
                 </div>
                 {previewSize !== null ? (
                   <div className="text-center py-4">
-                    <div className="text-3xl font-bold mb-1">{previewSize.toLocaleString()}</div>
+                    <div className="text-3xl font-bold mb-1">{previewSize.toString()}</div>
                     <p className="text-xs text-muted-foreground">Estimated recipients</p>
                   </div>
                 ) : (
