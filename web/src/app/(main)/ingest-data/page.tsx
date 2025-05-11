@@ -23,12 +23,14 @@ import {
   HelpCircle,
   FileUp,
 } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, Fragment } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Progress } from "@/components/ui/progress"
+import { auth } from "@/auth"
+import { redirect } from "next/dist/server/api-utils"
 
 // Zod schema for Customer form
 const customerFormSchema = z.object({
@@ -68,6 +70,95 @@ interface ICustomerOption {
   email: string
 }
 
+
+// New DataDisplayModal Component
+interface DataDisplayModalProps {
+  isOpen: boolean
+  onClose: () => void
+  title: string
+  data: any[] | null
+  dataType: 'customer' | 'order'
+  onDeleteCustomer?: (id: string) => void;
+}
+
+const DataDisplayModal: React.FC<DataDisplayModalProps> = ({ isOpen, onClose, title, data, dataType,onDeleteCustomer }) => {
+  if (!isOpen) return null
+
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return 'N/A'
+    try {
+      return new Date(dateString).toLocaleString(undefined, {
+        year: 'numeric', month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit'
+      })
+    } catch (e) {
+      return dateString // Return original if formatting fails
+    }
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+      <div className="bg-card text-card-foreground rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] flex flex-col">
+        <div className="flex items-center justify-between p-4 border-b">
+          <h3 className="text-lg font-semibold">{title}</h3>
+          <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close modal">
+            <XCircle className="h-5 w-5" />
+          </Button>
+        </div>
+        <div className="p-6 overflow-y-auto space-y-4">
+          {data && data.length > 0 ? (
+            data.map((item, index) => (
+              <div key={index} className="bg-muted/30 p-4 rounded-md shadow-sm border">
+                {dataType === 'customer' && (
+                  <div className="space-y-1.5 text-sm">
+                    <p><strong>Name:</strong> {item.name || 'N/A'}</p>
+                    <p><strong>Email:</strong> {item.email || 'N/A'}</p>
+                    <p><strong>Total Spends:</strong> ${item.totalSpends?.toFixed(2) || '0.00'}</p>
+                    <p><strong>Visit Count:</strong> {item.visitCount || 0}</p>
+                    <p><strong>Last Active:</strong> {formatDate(item.lastActiveDate)}</p>
+                    <p><strong>Joined:</strong> {formatDate(item.createdAt)}</p>
+                    <p className="text-xs text-muted-foreground pt-1">ID: {item._id}</p>
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (window.confirm("Are you sure you want to delete this customer?")) {
+                          onDeleteCustomer?.(item._id); // 👈 Use passed handler
+                        }
+                      }}
+                      className="mt-3"
+                    >
+                      Delete Customer
+                    </Button>
+                  </div>
+                )}
+                {dataType === 'order' && (
+                  <div className="space-y-1.5 text-sm">
+                    <p><strong>Order ID:</strong> {item.orderId || 'N/A'}</p>
+                    <p><strong>Customer:</strong> {item.customerId ? (typeof item.customerId === 'object' ? `${item.customerId.name || 'N/A'} (ID: ${item.customerId._id || 'N/A'})` : item.customerId) : 'N/A'}</p>
+                    <p><strong>Amount:</strong> ${item.orderAmount?.toFixed(2) || '0.00'}</p>
+                    <p><strong>Order Date:</strong> {formatDate(item.orderDate)}</p>
+                    <p><strong>Logged:</strong> {formatDate(item.createdAt)}</p>
+                     <p className="text-xs text-muted-foreground pt-1">ID: {item._id}</p>
+                  </div>
+                )}
+              </div>
+            ))
+          ) : (
+            <p className="text-muted-foreground text-center py-4">No data available or an error occurred.</p>
+          )}
+        </div>
+        <div className="p-4 border-t flex justify-end">
+          <Button variant="outline" onClick={onClose}>
+            Close
+          </Button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function IngestDataPage() {
   const [isLoadingCustomer, setIsLoadingCustomer] = useState(false)
   const [isLoadingOrder, setIsLoadingOrder] = useState(false)
@@ -91,6 +182,35 @@ export default function IngestDataPage() {
     errors: any[]
   } | null>(null)
   const [activeTab, setActiveTab] = useState("individual")
+  const handleDeleteCustomer = async (customerId: string) => {
+    try {
+      const response = await fetch(`/api/customers?id=${customerId}`, {
+        method: "DELETE",
+      });
+  
+      const result = await response.json();
+  
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to delete customer");
+      }
+  
+      // Success toast
+      toast.success("Customer deleted successfully");
+  
+      // Refresh modal data
+      const res = await fetch("/api/customers");
+      const data = await res.json();
+      setCustomerModalData(data.customers || []);
+    } catch (error: any) {
+      console.error("Error deleting customer:", error);
+      toast.error(error.message || "Failed to delete customer");
+    }
+  };
+  // State for modals
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false)
+  const [customerModalData, setCustomerModalData] = useState<any[] | null>(null)
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false)
+  const [orderModalData, setOrderModalData] = useState<any[] | null>(null)
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -201,6 +321,7 @@ export default function IngestDataPage() {
   // Fetch customers for the order form's customerId field
   useEffect(() => {
     const fetchCustomers = async () => {
+      
       try {
         const response = await fetch("/api/customers")
         if (!response.ok) {
@@ -795,13 +916,20 @@ export default function IngestDataPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Button
+          <Button
               variant="outline"
               onClick={async () => {
-                const res = await fetch("/api/customers")
-                const data = await res.json()
-                console.log("Customers:", data)
-                toast.success("Customers data fetched to console")
+                try {
+                  const res = await fetch("/api/customers");
+                  const data = await res.json();
+                  if (!res.ok) throw new Error(data.message || "Failed to fetch customers");
+                  setCustomerModalData(data.customers || []);
+                  setIsCustomerModalOpen(true);
+                } catch (error: any) {
+                  toast.error(error.message);
+                  setCustomerModalData(null);
+                  setIsCustomerModalOpen(true);
+                }
               }}
               className="h-20 flex flex-col items-center justify-center"
             >
@@ -811,10 +939,22 @@ export default function IngestDataPage() {
             <Button
               variant="outline"
               onClick={async () => {
-                const res = await fetch("/api/orders")
-                const data = await res.json()
-                console.log("Orders:", data)
-                toast.success("Orders data fetched to console")
+                // const res = await fetch("/api/orders")
+                // const data = await res.json()
+                // console.log("Orders:", data)
+                // toast.success("Orders data fetched to console")
+                try {
+                  const res = await fetch("/api/orders")
+                  const data = await res.json()
+                  console.log("Orders:", data)
+                  if (!res.ok) throw new Error(data.message || "Failed to fetch orders")
+                  setOrderModalData(data.orders || [])
+                  setIsOrderModalOpen(true)
+                } catch (error: any) {
+                  toast.error(error.message)
+                  setOrderModalData(null) // Ensure modal shows error/no data
+                  setIsOrderModalOpen(true) // Open modal to show error message
+                }
               }}
               className="h-20 flex flex-col items-center justify-center"
             >
@@ -825,10 +965,28 @@ export default function IngestDataPage() {
         </CardContent>
         <CardFooter className="bg-muted/20 border-t px-6 py-4">
           <p className="text-xs text-muted-foreground">
-            For development purposes only. In production, use the dashboard to view and manage your data.
+            For development & testing purposes, I have printed the data in console too.
           </p>
         </CardFooter>
       </Card>
+
+      {/* Modals */}
+      <DataDisplayModal
+        isOpen={isCustomerModalOpen}
+        onClose={() => setIsCustomerModalOpen(false)}
+        title="All Customers"
+        data={customerModalData}
+        dataType="customer"
+        onDeleteCustomer={handleDeleteCustomer} // 👈 Add this line
+
+      />
+      <DataDisplayModal
+        isOpen={isOrderModalOpen}
+        onClose={() => setIsOrderModalOpen(false)}
+        title="All Orders"
+        data={orderModalData}
+        dataType="order"
+      />
     </div>
   )
 }

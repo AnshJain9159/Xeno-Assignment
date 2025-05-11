@@ -89,3 +89,38 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+export async function DELETE(request: NextRequest) {
+  try {
+    const session = await auth();
+    if (!session) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
+    await dbConnect();
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json({ message: "Customer ID is required" }, { status: 400 });
+    }
+
+    const deletedCustomer = await CustomerModel.findByIdAndDelete(id);
+
+    if (!deletedCustomer) {
+      return NextResponse.json({ message: "Customer not found" }, { status: 404 });
+    }
+
+    return NextResponse.json(
+      { message: "Customer deleted successfully" },
+      { status: 200 }
+    );
+
+  } catch (error: any) {
+    console.error("Error deleting customer:", error);
+    return NextResponse.json(
+      { message: "Failed to delete customer", error: error.message },
+      { status: 500 }
+    );
+  }
+}

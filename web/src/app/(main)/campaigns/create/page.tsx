@@ -4,14 +4,14 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { toast } from "sonner"
 import type { AudienceRuleSet, IRuleCondition, IRuleGroup } from "@/models/campaign"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   PlusCircle,
@@ -43,6 +43,8 @@ const defaultRuleGroup: IRuleGroup = {
 
 export default function CreateCampaignPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+
   const [campaignName, setCampaignName] = useState("")
   const [messageTemplate, setMessageTemplate] = useState("Hi {{name}}, check out our new offers!")
   const [audienceRules, setAudienceRules] = useState<AudienceRuleSet>({ ...defaultRuleGroup })
@@ -58,6 +60,35 @@ export default function CreateCampaignPage() {
   const [activeMessageTab, setActiveMessageTab] = useState("template")
   const [messageGenerationProgress, setMessageGenerationProgress] = useState(0)
   const [selectedMessage, setSelectedMessage] = useState("")
+
+  // Effect to load segment rules if segmentId is in URL
+  useEffect(() => {
+    const segmentId = searchParams.get("segmentId")
+    if (segmentId) {
+      const fetchSegmentRules = async () => {
+        try {
+          toast.info("Loading rules from selected segment...")
+          const response = await fetch(`/api/audiences/${segmentId}`)
+          const data = await response.json()
+          if (!response.ok) {
+            throw new Error(data.message || "Failed to fetch segment rules")
+          }
+          if (data.audienceSegment && data.audienceSegment.rules) {
+            setAudienceRules(data.audienceSegment.rules)
+            setRuleJson(JSON.stringify(data.audienceSegment.rules, null, 2))
+            setActiveTab("json-editor") // Switch to JSON editor
+            toast.success("Audience rules loaded from segment!")
+          } else {
+            toast.error("Segment data is missing rules.")
+          }
+        } catch (error: any) {
+          console.error("Error fetching segment rules:", error)
+          toast.error(error.message || "Could not load segment rules.")
+        }
+      }
+      fetchSegmentRules()
+    }
+  }, [searchParams]) // Re-run if searchParams change
 
   // --- Basic Rule Management Functions ---
   const isValidRuleJson = () => {

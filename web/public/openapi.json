@@ -1,1058 +1,1133 @@
-{
-  "openapi": "3.0.0",
-  "info": {
-    "title": "Smart-Sphere CRM  API",
-    "version": "1.0.0",
-    "description": "API for Smart-Sphere CRM platform, including audience management, campaigns, AI tools, and more."
-  },
-  "tags": [
-    { "name": "AI", "description": "AI-powered tools for marketing." },
-    { "name": "Audiences", "description": "Manage audience segments and rules." },
-    { "name": "Campaigns", "description": "Create and manage marketing campaigns." },
-    { "name": "Customers", "description": "Manage customer data." },
-    { "name": "Orders", "description": "Manage order information." },
-    { "name": "Webhooks", "description": "Endpoints for receiving external webhooks." },
-    { "name": "Auth", "description": "Authentication and user management." },
-    { "name": "DummyVendor", "description": "Endpoints for a dummy vendor integration." },
-    { "name": "Swagger", "description": "API documentation utilities." }
-  ],
-  "paths": {
-    "/api/ai/generate-segment-rules": {
-      "post": {
-        "tags": ["AI"],
-        "summary": "Generates customer segmentation rules from a natural language prompt.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/GenerateRulesRequest" }
+  {
+    "openapi": "3.0.0",
+    "info": {
+      "title": "Smart-Sphere CRM  API",
+      "version": "1.0.0",
+      "description": "API for Smart-Sphere CRM platform, including audience management, campaigns, AI tools, and more."
+    },
+    "tags": [
+      { "name": "AI", "description": "AI-powered tools for marketing." },
+      { "name": "Audiences", "description": "Manage audience segments and rules." },
+      { "name": "Campaigns", "description": "Create and manage marketing campaigns." },
+      { "name": "Customers", "description": "Manage customer data." },
+      { "name": "Orders", "description": "Manage order information." },
+      { "name": "Webhooks", "description": "Endpoints for receiving external webhooks." },
+      { "name": "Auth", "description": "Authentication and user management." },
+      { "name": "DummyVendor", "description": "Endpoints for a dummy vendor integration." },
+      { "name": "Swagger", "description": "API documentation utilities." }
+    ],
+    "paths": {
+      "/api/ai/generate-segment-rules": {
+        "post": {
+          "tags": ["AI"],
+          "summary": "Generates customer segmentation rules from a natural language prompt.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/GenerateRulesRequest" }
+              }
             }
+          },
+          "responses": {
+            "200": {
+              "description": "Successfully generated rules.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "rules": { "$ref": "#/components/schemas/AudienceRuleSet" }
+                    }
+                  }
+                }
+              }
+            },
+            "400": { "$ref": "#/components/responses/BadRequest" },
+            "422": { "$ref": "#/components/responses/UnprocessableEntity" },
+            "500": { "$ref": "#/components/responses/InternalServerError" },
+            "503": { "$ref": "#/components/responses/ServiceUnavailable" }
+          }
+        }
+      },
+      "/api/ai/suggest-messages": {
+        "post": {
+          "tags": ["AI"],
+          "summary": "Suggests marketing messages based on campaign objectives.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/SuggestMessagesRequest" }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "Successfully suggested messages.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "suggestions": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": { "$ref": "#/components/responses/BadRequest" },
+            "422": { "$ref": "#/components/responses/UnprocessableEntity" },
+            "500": { "$ref": "#/components/responses/InternalServerError" },
+            "503": { "$ref": "#/components/responses/ServiceUnavailable" }
+          }
+        }
+      },
+      "/api/audiences": {
+        "post": {
+          "tags": ["Audiences"],
+          "summary": "Creates a new audience segment.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CreateAudienceSegmentRequest" }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "Audience segment created successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": { "type": "string" },
+                      "audienceSegment": { "$ref": "#/components/schemas/AudienceSegment" }
+                    }
+                  }
+                }
+              }
+            },
+            "400": { "$ref": "#/components/responses/BadRequest" },
+            "401": { "$ref": "#/components/responses/Unauthorized" },
+            "409": { "$ref": "#/components/responses/Conflict" },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
           }
         },
-        "responses": {
-          "200": {
-            "description": "Successfully generated rules.",
+        "get": {
+          "tags": ["Audiences"],
+          "summary": "Retrieves all audience segments.",
+          "responses": {
+            "200": {
+              "description": "Successfully retrieved audience segments.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "audienceSegments": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/AudienceSegment" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": { "$ref": "#/components/responses/Unauthorized" },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
+          }
+        }
+      },
+      "/api/audiences/preview": {
+        "post": {
+          "tags": ["Audiences"],
+          "summary": "Previews the size of an audience based on rules.",
+          "requestBody": {
+            "required": true,
             "content": {
               "application/json": {
                 "schema": {
                   "type": "object",
                   "properties": {
                     "rules": { "$ref": "#/components/schemas/AudienceRuleSet" }
-                  }
+                  },
+                  "required": ["rules"]
                 }
               }
             }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "422": { "$ref": "#/components/responses/UnprocessableEntity" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "503": { "$ref": "#/components/responses/ServiceUnavailable" }
-        }
-      }
-    },
-    "/api/ai/suggest-messages": {
-      "post": {
-        "tags": ["AI"],
-        "summary": "Suggests marketing messages based on campaign objectives.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/SuggestMessagesRequest" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successfully suggested messages.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "suggestions": {
-                      "type": "array",
-                      "items": { "type": "string" }
+          "responses": {
+            "200": {
+              "description": "Successfully previewed audience size.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "audienceSize": { "type": "integer" },
+                      "query": { "type": "object", "description": "The MongoDB query generated from rules (for debugging)." },
+                      "message": { "type": "string", "nullable": true }
                     }
                   }
                 }
               }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "422": { "$ref": "#/components/responses/UnprocessableEntity" },
-          "500": { "$ref": "#/components/responses/InternalServerError" },
-          "503": { "$ref": "#/components/responses/ServiceUnavailable" }
-        }
-      }
-    },
-    "/api/audiences": {
-      "post": {
-        "tags": ["Audiences"],
-        "summary": "Creates a new audience segment.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateAudienceSegmentRequest" }
-            }
+            },
+            "400": { "$ref": "#/components/responses/BadRequest" },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
           }
-        },
-        "responses": {
-          "201": {
-            "description": "Audience segment created successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" },
-                    "audienceSegment": { "$ref": "#/components/schemas/AudienceSegment" }
-                  }
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "409": { "$ref": "#/components/responses/Conflict" },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
         }
       },
-      "get": {
-        "tags": ["Audiences"],
-        "summary": "Retrieves all audience segments.",
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved audience segments.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "audienceSegments": {
-                      "type": "array",
-                      "items": { "$ref": "#/components/schemas/AudienceSegment" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      }
-    },
-    "/api/audiences/preview": {
-      "post": {
-        "tags": ["Audiences"],
-        "summary": "Previews the size of an audience based on rules.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "rules": { "$ref": "#/components/schemas/AudienceRuleSet" }
-                },
-                "required": ["rules"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Successfully previewed audience size.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "audienceSize": { "type": "integer" },
-                    "query": { "type": "object", "description": "The MongoDB query generated from rules (for debugging)." },
-                    "message": { "type": "string", "nullable": true }
-                  }
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      }
-    },
-    "/api/campaigns": {
-      "post": {
-        "tags": ["Campaigns"],
-        "summary": "Creates a new campaign.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateCampaignRequest" }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Campaign created successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" },
-                    "campaign": { "$ref": "#/components/schemas/Campaign" }
-                  }
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      },
-      "get": {
-        "tags": ["Campaigns"],
-        "summary": "Retrieves all campaigns.",
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved campaigns.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "campaigns": {
-                      "type": "array",
-                      "items": { "$ref": "#/components/schemas/Campaign" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      }
-    },
-    "/api/campaigns/{campaignId}/autotag": {
-      "post": {
-        "tags": ["Campaigns"],
-        "summary": "Generates and applies AI-suggested tags to a campaign.",
-        "parameters": [
-          { "$ref": "#/components/parameters/CampaignIdPath" }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully generated and applied tags.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "tags": {
-                      "type": "array",
-                      "items": { "type": "string" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "404": { "$ref": "#/components/responses/NotFound" }
-        }
-      }
-    },
-    "/api/campaigns/{campaignId}/deliver": {
-      "post": {
-        "tags": ["Campaigns"],
-        "summary": "Initiates the delivery process for a campaign.",
-        "parameters": [
-          { "$ref": "#/components/parameters/CampaignIdPath" }
-        ],
-        "responses": {
-          "200": {
-            "description": "Campaign delivery process initiated.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" },
-                    "campaignId": { "type": "string" },
-                    "initiatedSends": { "type": "integer" },
-                    "audienceSize": { "type": "integer" }
-                  }
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "409": { "$ref": "#/components/responses/Conflict" },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      }
-    },
-    "/api/campaigns/{campaignId}/logs": {
-      "get": {
-        "tags": ["Campaigns"],
-        "summary": "Retrieves communication logs for a specific campaign.",
-        "parameters": [
-          { "$ref": "#/components/parameters/CampaignIdPath" }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved campaign logs.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "logs": {
-                      "type": "array",
-                      "items": { "$ref": "#/components/schemas/CommunicationLog" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      }
-    },
-    "/api/campaigns/{campaignId}/summary": {
-      "get": {
-        "tags": ["Campaigns"],
-        "summary": "Retrieves an AI-generated summary for a campaign.",
-        "parameters": [
-          { "$ref": "#/components/parameters/CampaignIdPath" }
-        ],
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved campaign summary.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "summary": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "404": { "$ref": "#/components/responses/NotFound" }
-        }
-      }
-    },
-    "/api/customers": {
-      "post": {
-        "tags": ["Customers"],
-        "summary": "Creates a new customer.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateCustomerRequest" }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Customer created successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" },
-                    "customer": { "$ref": "#/components/schemas/Customer" }
-                  }
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "409": { "$ref": "#/components/responses/Conflict" },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      },
-      "get": {
-        "tags": ["Customers"],
-        "summary": "Retrieves all customers.",
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved customers.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "customers": {
-                      "type": "array",
-                      "items": { "$ref": "#/components/schemas/Customer" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      }
-    },
-    "/api/customers/bulk-upload": {
-      "post": {
-        "tags": ["Customers"],
-        "summary": "Bulk uploads customers from a CSV file.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "csvFile": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "CSV file containing customer data."
-                  }
-                },
-                "required": ["csvFile"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": { "$ref": "#/components/responses/BulkUploadResult" },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "401": { "$ref": "#/components/responses/Unauthorized" },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      }
-    },
-    "/api/orders": {
-      "post": {
-        "tags": ["Orders"],
-        "summary": "Creates a new order.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/CreateOrderRequest" }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "Order created successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" },
-                    "order": { "$ref": "#/components/schemas/Order" }
-                  }
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "409": { "$ref": "#/components/responses/Conflict" },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      },
-      "get": {
-        "tags": ["Orders"],
-        "summary": "Retrieves all orders.",
-        "responses": {
-          "200": {
-            "description": "Successfully retrieved orders.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "orders": {
-                      "type": "array",
-                      "items": { "$ref": "#/components/schemas/Order" }
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      }
-    },
-    "/api/orders/bulk-upload": {
-      "post": {
-        "tags": ["Orders"],
-        "summary": "Bulk uploads orders from a CSV file.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "csvFile": {
-                    "type": "string",
-                    "format": "binary",
-                    "description": "CSV file containing order data."
-                  }
-                },
-                "required": ["csvFile"]
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": { "$ref": "#/components/responses/BulkUploadResult" },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      }
-    },
-    "/api/webhooks/delivery-receipts": {
-      "post": {
-        "tags": ["Webhooks"],
-        "summary": "Receives delivery receipts from a messaging vendor.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/DeliveryReceiptWebhook" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Log updated successfully via webhook.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      }
-    },
-    "/api/dummy-vendor/send": {
-      "post": {
-        "tags": ["DummyVendor"],
-        "summary": "Simulates sending a message via a dummy vendor.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/DummyVendorSendRequest" }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "Message processing simulated by vendor.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" },
-                    "status": { "type": "string", "enum": ["SENT", "FAILED"] },
-                    "vendorMessageId": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      }
-    },
-    "/api/auth/register": {
-      "post": {
-        "tags": ["Auth"],
-        "summary": "Registers a new user.",
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/RegisterRequest" }
-            }
-          }
-        },
-        "responses": {
-          "201": {
-            "description": "User registered successfully.",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": { "type": "string" }
-                  }
-                }
-              }
-            }
-          },
-          "400": { "$ref": "#/components/responses/BadRequest" },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      }
-    },
-    "/api/auth/{provider}/callback": {
-      "get": {
-        "tags": ["Auth"],
-        "summary": "OAuth callback for a specific provider (handled by NextAuth).",
-        "parameters": [
-          {
-            "name": "provider",
-            "in": "path",
-            "required": true,
-            "description": "The OAuth provider name (e.g., google, github).",
-            "schema": { "type": "string" }
-          }
-        ],
-        "responses": {
-          "302": { "description": "Redirects after successful authentication or on error." },
-          "default": { "description": "Response handled by NextAuth.js." }
-        }
-      },
-      "post": {
-        "tags": ["Auth"],
-        "summary": "OAuth callback for a specific provider (handled by NextAuth).",
-         "parameters": [
-          {
-            "name": "provider",
-            "in": "path",
-            "required": true,
-            "description": "The OAuth provider name (e.g., google, github).",
-            "schema": { "type": "string" }
-          }
-        ],
-        "responses": {
-          "default": { "description": "Response handled by NextAuth.js." }
-        }
-      }
-    },
-     "/api/auth/signin": {
-      "get": {
-        "tags": ["Auth"],
-        "summary": "Renders the sign-in page or handles sign-in for specific providers (handled by NextAuth).",
-        "responses": {
-          "200": { "description": "Sign-in page or provider redirect." },
-          "default": { "description": "Response handled by NextAuth.js." }
-        }
-      },
-       "post": {
-        "tags": ["Auth"],
-        "summary": "Handles credential sign-in (handled by NextAuth).",
-        "responses": {
-          "default": { "description": "Response handled by NextAuth.js." }
-        }
-      }
-    },
-    "/api/auth/signout": {
-      "get": {
-        "tags": ["Auth"],
-        "summary": "Handles user sign-out (handled by NextAuth).",
-        "responses": {
-          "default": { "description": "Response handled by NextAuth.js." }
-        }
-      },
-      "post": {
-        "tags": ["Auth"],
-        "summary": "Handles user sign-out (handled by NextAuth).",
-        "responses": {
-          "default": { "description": "Response handled by NextAuth.js." }
-        }
-      }
-    },
-    "/api/auth/session": {
+      "/api/audiences/{segmentId}": {
         "get": {
-            "tags": ["Auth"],
-            "summary": "Retrieves the current session (handled by NextAuth).",
-            "responses": {
-                "200": { "description": "Session data." },
-                "default": { "description": "Response handled by NextAuth.js." }
-            }
+          "tags": ["Audiences"],
+          "summary": "Retrieves a specific audience segment by its ID.",
+          "parameters": [
+            { "$ref": "#/components/parameters/SegmentIdPath" }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successfully retrieved the audience segment.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "audienceSegment": { "$ref": "#/components/schemas/AudienceSegment" }
+                    }
+                  }
+                }
+              }
+            },
+            "400": { "$ref": "#/components/responses/BadRequest" },
+            "401": { "$ref": "#/components/responses/Unauthorized" },
+            "404": { "$ref": "#/components/responses/NotFound" },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
+          }
         }
-    },
-    "/api/auth/csrf": {
-        "get": {
-            "tags": ["Auth"],
-            "summary": "Retrieves a CSRF token (handled by NextAuth).",
-            "responses": {
-                 "200": { "description": "CSRF token." },
-                "default": { "description": "Response handled by NextAuth.js." }
-            }
-        }
-    },
-    "/api/swagger": {
-      "get": {
-        "tags": ["Swagger"],
-        "summary": "Serves the OpenAPI specification for this API.",
-        "responses": {
-          "200": {
-            "description": "The OpenAPI (Swagger) JSON document.",
+      },
+      "/api/campaigns": {
+        "post": {
+          "tags": ["Campaigns"],
+          "summary": "Creates a new campaign.",
+          "requestBody": {
+            "required": true,
             "content": {
               "application/json": {
-                "schema": { "type": "object" }
+                "schema": { "$ref": "#/components/schemas/CreateCampaignRequest" }
               }
             }
           },
-          "500": { "$ref": "#/components/responses/InternalServerError" }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "RuleCondition": {
-        "type": "object",
-        "properties": {
-          "field": { "type": "string", "enum": ["totalSpends", "visitCount", "lastActiveDate", "name", "email"] },
-          "operator": { "type": "string", "enum": ["EQUALS", "NOT_EQUALS", "GREATER_THAN", "LESS_THAN", "CONTAINS", "STARTS_WITH", "ENDS_WITH", "OLDER_THAN_DAYS", "IN_LAST_DAYS"] },
-          "value": { "oneOf": [{ "type": "string" }, { "type": "number" }, { "type": "boolean" }, {"type": "null"} ], "description": "Value for comparison. For date operators, this is number of days." },
-          "dataType": { "type": "string", "enum": ["string", "number", "date", "boolean"], "nullable": true }
-        },
-        "required": ["field", "operator", "value"]
-      },
-      "RuleGroup": {
-        "type": "object",
-        "properties": {
-          "logicalOperator": { "type": "string", "enum": ["AND", "OR"] },
-          "conditions": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/RuleCondition" }
-          },
-          "groups": {
-            "type": "array",
-            "items": { "$ref": "#/components/schemas/RuleGroup" },
-            "nullable": true,
-            "description": "Nested rule groups."
+          "responses": {
+            "201": {
+              "description": "Campaign created successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": { "type": "string" },
+                      "campaign": { "$ref": "#/components/schemas/Campaign" }
+                    }
+                  }
+                }
+              }
+            },
+            "400": { "$ref": "#/components/responses/BadRequest" },
+            "401": { "$ref": "#/components/responses/Unauthorized" },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
           }
         },
-        "required": ["logicalOperator", "conditions"]
-      },
-      "AudienceRuleSet": {
-        "$ref": "#/components/schemas/RuleGroup"
-      },
-      "GenerateRulesRequest": {
-        "type": "object",
-        "properties": {
-          "prompt": { "type": "string", "minLength": 10, "description": "Natural language prompt for rule generation." }
-        },
-        "required": ["prompt"]
-      },
-      "SuggestMessagesRequest": {
-        "type": "object",
-        "properties": {
-          "objective": { "type": "string", "minLength": 10, "description": "Campaign objective." },
-          "audienceDescription": { "type": "string", "nullable": true, "description": "Description of the target audience." },
-          "tone": { "type": "string", "enum": ["neutral", "formal", "friendly", "playful", "urgent"], "default": "neutral", "nullable": true },
-          "messageCount": { "type": "integer", "minimum": 1, "maximum": 5, "default": 3, "nullable": true }
-        },
-        "required": ["objective"]
-      },
-      "AudienceSegment": {
-        "type": "object",
-        "properties": {
-          "_id": { "type": "string", "format": "objectid", "description": "MongoDB ObjectId" },
-          "name": { "type": "string" },
-          "description": { "type": "string", "nullable": true },
-          "rules": { "$ref": "#/components/schemas/AudienceRuleSet" },
-          "createdBy": { "type": "string", "format": "objectid", "description": "User ID of creator (MongoDB ObjectId)", "nullable": true },
-          "createdAt": { "type": "string", "format": "date-time" },
-          "updatedAt": { "type": "string", "format": "date-time" }
+        "get": {
+          "tags": ["Campaigns"],
+          "summary": "Retrieves all campaigns.",
+          "responses": {
+            "200": {
+              "description": "Successfully retrieved campaigns.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "campaigns": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/Campaign" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "401": { "$ref": "#/components/responses/Unauthorized" },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
+          }
         }
       },
-      "CreateAudienceSegmentRequest": {
-        "type": "object",
-        "properties": {
-          "name": { "type": "string", "minLength": 3 },
-          "description": { "type": "string", "nullable": true },
-          "rules": { "$ref": "#/components/schemas/AudienceRuleSet" }
-        },
-        "required": ["name", "rules"]
-      },
-      "Campaign": {
-        "type": "object",
-        "properties": {
-          "_id": { "type": "string", "format": "objectid" },
-          "name": { "type": "string" },
-          "audienceRules": { "$ref": "#/components/schemas/AudienceRuleSet" },
-          "messageTemplate": { "type": "string" },
-          "status": { "type": "string", "enum": ["DRAFT", "SENDING", "COMPLETED", "FAILED", "ARCHIVED"] },
-          "audienceSize": { "type": "integer", "default": 0 },
-          "sentCount": { "type": "integer", "default": 0 },
-          "failedCount": { "type": "integer", "default": 0 },
-          "tags": { "type": "array", "items": { "type": "string" }, "nullable": true },
-          "createdBy": { "type": "string", "format": "objectid", "nullable": true },
-          "createdAt": { "type": "string", "format": "date-time" },
-          "updatedAt": { "type": "string", "format": "date-time" }
+      "/api/campaigns/{campaignId}/autotag": {
+        "post": {
+          "tags": ["Campaigns"],
+          "summary": "Generates and applies AI-suggested tags to a campaign.",
+          "parameters": [
+            { "$ref": "#/components/parameters/CampaignIdPath" }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successfully generated and applied tags.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "tags": {
+                        "type": "array",
+                        "items": { "type": "string" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "404": { "$ref": "#/components/responses/NotFound" }
+          }
         }
       },
-      "CreateCampaignRequest": {
-        "type": "object",
-        "properties": {
-          "name": { "type": "string", "minLength": 3 },
-          "audienceRules": { "$ref": "#/components/schemas/AudienceRuleSet" },
-          "messageTemplate": { "type": "string", "minLength": 10 }
-        },
-        "required": ["name", "audienceRules", "messageTemplate"]
-      },
-      "CommunicationLog": {
-        "type": "object",
-        "properties": {
-          "_id": { "type": "string", "format": "objectid" },
-          "campaignId": { "type": "string", "format": "objectid" },
-          "customerId": { "type": "string", "format": "objectid" },
-          "message": { "type": "string" },
-          "status": { "type": "string", "enum": ["PENDING", "SENT", "FAILED", "DELIVERED"] },
-          "sentAt": { "type": "string", "format": "date-time", "nullable": true },
-          "failedAt": { "type": "string", "format": "date-time", "nullable": true },
-          "deliveredAt": { "type": "string", "format": "date-time", "nullable": true },
-          "failureReason": { "type": "string", "nullable": true },
-          "vendorMessageId": { "type": "string", "nullable": true },
-          "createdBy": { "type": "string", "format": "objectid", "nullable": true },
-          "createdAt": { "type": "string", "format": "date-time" },
-          "updatedAt": { "type": "string", "format": "date-time" }
+      "/api/campaigns/{campaignId}/deliver": {
+        "post": {
+          "tags": ["Campaigns"],
+          "summary": "Initiates the delivery process for a campaign.",
+          "parameters": [
+            { "$ref": "#/components/parameters/CampaignIdPath" }
+          ],
+          "responses": {
+            "200": {
+              "description": "Campaign delivery process initiated.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": { "type": "string" },
+                      "campaignId": { "type": "string" },
+                      "initiatedSends": { "type": "integer" },
+                      "audienceSize": { "type": "integer" }
+                    }
+                  }
+                }
+              }
+            },
+            "400": { "$ref": "#/components/responses/BadRequest" },
+            "401": { "$ref": "#/components/responses/Unauthorized" },
+            "404": { "$ref": "#/components/responses/NotFound" },
+            "409": { "$ref": "#/components/responses/Conflict" },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
+          }
         }
       },
-      "Customer": {
-        "type": "object",
-        "properties": {
-          "_id": { "type": "string", "format": "objectid" },
-          "name": { "type": "string" },
-          "email": { "type": "string", "format": "email" },
-          "totalSpends": { "type": "number", "default": 0 },
-          "visitCount": { "type": "integer", "default": 0 },
-          "lastActiveDate": { "type": "string", "format": "date-time", "nullable": true },
-          "createdAt": { "type": "string", "format": "date-time" },
-          "updatedAt": { "type": "string", "format": "date-time" }
+      "/api/campaigns/{campaignId}/logs": {
+        "get": {
+          "tags": ["Campaigns"],
+          "summary": "Retrieves communication logs for a specific campaign.",
+          "parameters": [
+            { "$ref": "#/components/parameters/CampaignIdPath" }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successfully retrieved campaign logs.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "logs": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/CommunicationLog" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "400": { "$ref": "#/components/responses/BadRequest" },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
+          }
         }
       },
-      "CreateCustomerRequest": {
-        "type": "object",
-        "properties": {
-          "name": { "type": "string", "minLength": 1 },
-          "email": { "type": "string", "format": "email" },
-          "totalSpends": { "type": "number", "minimum": 0, "nullable": true },
-          "visitCount": { "type": "integer", "minimum": 0, "nullable": true },
-          "lastActiveDate": { "type": "string", "format": "date-time", "nullable": true }
-        },
-        "required": ["name", "email"]
-      },
-      "Order": {
-        "type": "object",
-        "properties": {
-          "_id": { "type": "string", "format": "objectid" },
-          "orderId": { "type": "string" },
-          "customerId": { "type": "string", "format": "objectid" },
-          "orderAmount": { "type": "number", "minimum": 0 },
-          "orderDate": { "type": "string", "format": "date-time" },
-          "createdAt": { "type": "string", "format": "date-time" },
-          "updatedAt": { "type": "string", "format": "date-time" }
+      "/api/campaigns/{campaignId}/summary": {
+        "get": {
+          "tags": ["Campaigns"],
+          "summary": "Retrieves an AI-generated summary for a campaign.",
+          "parameters": [
+            { "$ref": "#/components/parameters/CampaignIdPath" }
+          ],
+          "responses": {
+            "200": {
+              "description": "Successfully retrieved campaign summary.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "summary": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            },
+            "404": { "$ref": "#/components/responses/NotFound" }
+          }
         }
       },
-      "CreateOrderRequest": {
-        "type": "object",
-        "properties": {
-          "orderId": { "type": "string", "minLength": 1 },
-          "customerId": { "type": "string", "description": "MongoDB ObjectId of the customer." },
-          "orderAmount": { "type": "number", "minimum": 0 },
-          "orderDate": { "type": "string", "format": "date-time" }
-        },
-        "required": ["orderId", "customerId", "orderAmount", "orderDate"]
-      },
-      "DeliveryReceiptWebhook": {
-        "type": "object",
-        "properties": {
-          "communicationLogId": { "type": "string", "description": "MongoDB ObjectId of the communication log." },
-          "status": { "type": "string", "description": "Delivery status from vendor." },
-          "vendorMessageId": { "type": "string", "description": "ID assigned by the vendor." },
-          "timestamp": { "type": "string", "format": "date-time", "description": "Timestamp of the status update." },
-          "failureReason": { "type": "string", "nullable": true, "description": "Reason for failure, if applicable." }
-        },
-        "required": ["communicationLogId", "status", "vendorMessageId", "timestamp"]
-      },
-      "DummyVendorSendRequest": {
-        "type": "object",
-        "properties": {
-          "customerId": { "type": "string" },
-          "message": { "type": "string" },
-          "communicationLogId": { "type": "string" },
-          "callbackUrl": { "type": "string", "format": "uri" },
-          "customerEmail": { "type": "string", "format": "email", "nullable": true }
-        },
-        "required": ["customerId", "message", "communicationLogId", "callbackUrl"]
-      },
-      "RegisterRequest": {
-        "type": "object",
-        "properties": {
-          "fullName": { "type": "string" },
-          "email": { "type": "string", "format": "email" },
-          "password": { "type": "string", "minLength": 6 }
-        },
-        "required": ["fullName", "email", "password"]
-      },
-      "BulkUploadErrorDetail": {
-        "type": "object",
-        "properties": {
-            "row": { "type": "integer", "description": "Row number in the CSV file (1-based for data rows)." },
-            "email": { "type": "string", "nullable": true, "description": "Email of the record with error (for customer/order CSVs)." },
-            "orderId": { "type": "string", "nullable": true, "description": "Order ID of the record with error (for order CSVs)." },
-            "message": { "type": "string", "description": "Error message." },
-            "details": { "type": "object", "additionalProperties": true, "nullable": true, "description": "Detailed error information, often from Zod." }
+      "/api/customers": {
+  "post": {
+    "tags": ["Customers"],
+    "summary": "Creates a new customer.",
+    "requestBody": {
+      "required": true,
+      "content": {
+        "application/json": {
+          "schema": { "$ref": "#/components/schemas/CreateCustomerRequest" }
         }
-      }
-    },
-    "parameters": {
-      "CampaignIdPath": {
-        "name": "campaignId",
-        "in": "path",
-        "required": true,
-        "description": "The ID of the campaign.",
-        "schema": { "type": "string", "format": "objectid" }
       }
     },
     "responses": {
-      "BadRequest": {
-        "description": "Bad Request - Often due to validation errors.",
+      "201": {
+        "description": "Customer created successfully.",
         "content": {
           "application/json": {
             "schema": {
               "type": "object",
               "properties": {
                 "message": { "type": "string" },
-                "errors": { "type": "object", "additionalProperties": true, "nullable": true }
+                "customer": { "$ref": "#/components/schemas/Customer" }
               }
             }
           }
         }
       },
-      "Unauthorized": {
-        "description": "Unauthorized - Authentication is required and has failed or has not yet been provided.",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": { "type": "string", "example": "Unauthorized" }
+      "400": { "$ref": "#/components/responses/BadRequest" },
+      "409": { "$ref": "#/components/responses/Conflict" },
+      "500": { "$ref": "#/components/responses/InternalServerError" }
+    }
+  },
+  "get": {
+          "tags": ["Customers"],
+          "summary": "Retrieves all customers.",
+          "responses": {
+            "200": {
+              "description": "Successfully retrieved customers.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "customers": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/Customer" }
+                      }
+                    }
+                  }
+                }
               }
+            },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
+          }
+        },
+        "delete": {
+          "tags": ["Customers"],
+          "summary": "Deletes a specific customer by ID.",
+          "parameters": [
+            {
+              "name": "id",
+              "in": "query",
+              "description": "The ID of the customer to delete.",
+              "required": true,
+              "schema": {
+                "type": "string",
+                "format": "objectid"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "Customer deleted successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            },
+            "401": {
+              "$ref": "#/components/responses/Unauthorized"
+            },
+            "404": {
+              "$ref": "#/components/responses/NotFound"
+            },
+            "500": {
+              "$ref": "#/components/responses/InternalServerError"
             }
           }
         }
       },
-      "NotFound": {
-        "description": "Not Found - The requested resource could not be found.",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": { "type": "string" }
+      "/api/customers/bulk-upload": {
+        "post": {
+          "tags": ["Customers"],
+          "summary": "Bulk uploads customers from a CSV file.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "csvFile": {
+                      "type": "string",
+                      "format": "binary",
+                      "description": "CSV file containing customer data."
+                    }
+                  },
+                  "required": ["csvFile"]
+                }
               }
             }
+          },
+          "responses": {
+            "200": { "$ref": "#/components/responses/BulkUploadResult" },
+            "400": { "$ref": "#/components/responses/BadRequest" },
+            "401": { "$ref": "#/components/responses/Unauthorized" },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
           }
         }
       },
-      "Conflict": {
-        "description": "Conflict - The request could not be completed due to a conflict with the current state of the resource (e.g., duplicate entry).",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": { "type": "string" }
+      "/api/orders": {
+        "post": {
+          "tags": ["Orders"],
+          "summary": "Creates a new order.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CreateOrderRequest" }
               }
             }
+          },
+          "responses": {
+            "201": {
+              "description": "Order created successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": { "type": "string" },
+                      "order": { "$ref": "#/components/schemas/Order" }
+                    }
+                  }
+                }
+              }
+            },
+            "400": { "$ref": "#/components/responses/BadRequest" },
+            "404": { "$ref": "#/components/responses/NotFound" },
+            "409": { "$ref": "#/components/responses/Conflict" },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
+          }
+        },
+        "get": {
+          "tags": ["Orders"],
+          "summary": "Retrieves all orders.",
+          "responses": {
+            "200": {
+              "description": "Successfully retrieved orders.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "orders": {
+                        "type": "array",
+                        "items": { "$ref": "#/components/schemas/Order" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
           }
         }
       },
-      "UnprocessableEntity": {
-        "description": "Unprocessable Entity - The server understands the content type of the request entity, and the syntax of the request entity is correct, but it was unable to process the contained instructions (e.g., AI could not process prompt).",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": { "type": "string" }
+      "/api/orders/bulk-upload": {
+        "post": {
+          "tags": ["Orders"],
+          "summary": "Bulk uploads orders from a CSV file.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "multipart/form-data": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "csvFile": {
+                      "type": "string",
+                      "format": "binary",
+                      "description": "CSV file containing order data."
+                    }
+                  },
+                  "required": ["csvFile"]
+                }
               }
             }
+          },
+          "responses": {
+            "200": { "$ref": "#/components/responses/BulkUploadResult" },
+            "400": { "$ref": "#/components/responses/BadRequest" },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
           }
         }
       },
-      "InternalServerError": {
-        "description": "Internal Server Error - An unexpected condition was encountered.",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": { "type": "string" },
-                "error": { "type": "string", "nullable": true }
+      "/api/webhooks/delivery-receipts": {
+        "post": {
+          "tags": ["Webhooks"],
+          "summary": "Receives delivery receipts from a messaging vendor.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DeliveryReceiptWebhook" }
               }
             }
+          },
+          "responses": {
+            "200": {
+              "description": "Log updated successfully via webhook.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            },
+            "400": { "$ref": "#/components/responses/BadRequest" },
+            "404": { "$ref": "#/components/responses/NotFound" },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
           }
         }
       },
-      "ServiceUnavailable": {
-        "description": "Service Unavailable - The server is currently unable to handle the request due to a temporary overload or maintenance (e.g., AI service not configured).",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "message": { "type": "string" }
+      "/api/dummy-vendor/send": {
+        "post": {
+          "tags": ["DummyVendor"],
+          "summary": "Simulates sending a message via a dummy vendor.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/DummyVendorSendRequest" }
               }
             }
+          },
+          "responses": {
+            "200": {
+              "description": "Message processing simulated by vendor.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": { "type": "string" },
+                      "status": { "type": "string", "enum": ["SENT", "FAILED"] },
+                      "vendorMessageId": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            },
+            "400": { "$ref": "#/components/responses/BadRequest" },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
           }
         }
       },
-      "BulkUploadResult": {
-        "description": "Result of a bulk upload operation.",
-        "content": {
-          "application/json": {
-            "schema": {
-              "type": "object",
-              "properties": {
-                "successfulUploads": { "type": "integer" },
-                "failedUploads": { "type": "integer" },
-                "errors": {
-                  "type": "array",
-                  "items": { "$ref": "#/components/schemas/BulkUploadErrorDetail" }
-                },
-                "createdCustomers": { "type": "array", "items": { "type": "object" }, "description": "Summary of created customers, if applicable.", "nullable": true },
-                "createdOrders": { "type": "array", "items": { "type": "object" }, "description": "Summary of created orders, if applicable.", "nullable": true }
+      "/api/auth/register": {
+        "post": {
+          "tags": ["Auth"],
+          "summary": "Registers a new user.",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/RegisterRequest" }
+              }
+            }
+          },
+          "responses": {
+            "201": {
+              "description": "User registered successfully.",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "type": "object",
+                    "properties": {
+                      "message": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            },
+            "400": { "$ref": "#/components/responses/BadRequest" },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
+          }
+        }
+      },
+      "/api/auth/{provider}/callback": {
+        "get": {
+          "tags": ["Auth"],
+          "summary": "OAuth callback for a specific provider (handled by NextAuth).",
+          "parameters": [
+            {
+              "name": "provider",
+              "in": "path",
+              "required": true,
+              "description": "The OAuth provider name (e.g., google, github).",
+              "schema": { "type": "string" }
+            }
+          ],
+          "responses": {
+            "302": { "description": "Redirects after successful authentication or on error." },
+            "default": { "description": "Response handled by NextAuth.js." }
+          }
+        },
+        "post": {
+          "tags": ["Auth"],
+          "summary": "OAuth callback for a specific provider (handled by NextAuth).",
+          "parameters": [
+            {
+              "name": "provider",
+              "in": "path",
+              "required": true,
+              "description": "The OAuth provider name (e.g., google, github).",
+              "schema": { "type": "string" }
+            }
+          ],
+          "responses": {
+            "default": { "description": "Response handled by NextAuth.js." }
+          }
+        }
+      },
+      "/api/auth/signin": {
+        "get": {
+          "tags": ["Auth"],
+          "summary": "Renders the sign-in page or handles sign-in for specific providers (handled by NextAuth).",
+          "responses": {
+            "200": { "description": "Sign-in page or provider redirect." },
+            "default": { "description": "Response handled by NextAuth.js." }
+          }
+        },
+        "post": {
+          "tags": ["Auth"],
+          "summary": "Handles credential sign-in (handled by NextAuth).",
+          "responses": {
+            "default": { "description": "Response handled by NextAuth.js." }
+          }
+        }
+      },
+      "/api/auth/signout": {
+        "get": {
+          "tags": ["Auth"],
+          "summary": "Handles user sign-out (handled by NextAuth).",
+          "responses": {
+            "default": { "description": "Response handled by NextAuth.js." }
+          }
+        },
+        "post": {
+          "tags": ["Auth"],
+          "summary": "Handles user sign-out (handled by NextAuth).",
+          "responses": {
+            "default": { "description": "Response handled by NextAuth.js." }
+          }
+        }
+      },
+      "/api/auth/session": {
+          "get": {
+              "tags": ["Auth"],
+              "summary": "Retrieves the current session (handled by NextAuth).",
+              "responses": {
+                  "200": { "description": "Session data." },
+                  "default": { "description": "Response handled by NextAuth.js." }
+              }
+          }
+      },
+      "/api/auth/csrf": {
+          "get": {
+              "tags": ["Auth"],
+              "summary": "Retrieves a CSRF token (handled by NextAuth).",
+              "responses": {
+                  "200": { "description": "CSRF token." },
+                  "default": { "description": "Response handled by NextAuth.js." }
+              }
+          }
+      },
+      "/api/swagger": {
+        "get": {
+          "tags": ["Swagger"],
+          "summary": "Serves the OpenAPI specification for this API.",
+          "responses": {
+            "200": {
+              "description": "The OpenAPI (Swagger) JSON document.",
+              "content": {
+                "application/json": {
+                  "schema": { "type": "object" }
+                }
+              }
+            },
+            "500": { "$ref": "#/components/responses/InternalServerError" }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "RuleCondition": {
+          "type": "object",
+          "properties": {
+            "field": { "type": "string", "enum": ["totalSpends", "visitCount", "lastActiveDate", "name", "email"] },
+            "operator": { "type": "string", "enum": ["EQUALS", "NOT_EQUALS", "GREATER_THAN", "LESS_THAN", "CONTAINS", "STARTS_WITH", "ENDS_WITH", "OLDER_THAN_DAYS", "IN_LAST_DAYS"] },
+            "value": { "oneOf": [{ "type": "string" }, { "type": "number" }, { "type": "boolean" }, {"type": "null"} ], "description": "Value for comparison. For date operators, this is number of days." },
+            "dataType": { "type": "string", "enum": ["string", "number", "date", "boolean"], "nullable": true }
+          },
+          "required": ["field", "operator", "value"]
+        },
+        "RuleGroup": {
+          "type": "object",
+          "properties": {
+            "logicalOperator": { "type": "string", "enum": ["AND", "OR"] },
+            "conditions": {
+              "type": "array",
+              "items": { "$ref": "#/components/schemas/RuleCondition" }
+            },
+            "groups": {
+              "type": "array",
+              "items": { "$ref": "#/components/schemas/RuleGroup" },
+              "nullable": true,
+              "description": "Nested rule groups."
+            }
+          },
+          "required": ["logicalOperator", "conditions"]
+        },
+        "AudienceRuleSet": {
+          "$ref": "#/components/schemas/RuleGroup"
+        },
+        "GenerateRulesRequest": {
+          "type": "object",
+          "properties": {
+            "prompt": { "type": "string", "minLength": 10, "description": "Natural language prompt for rule generation." }
+          },
+          "required": ["prompt"]
+        },
+        "SuggestMessagesRequest": {
+          "type": "object",
+          "properties": {
+            "objective": { "type": "string", "minLength": 10, "description": "Campaign objective." },
+            "audienceDescription": { "type": "string", "nullable": true, "description": "Description of the target audience." },
+            "tone": { "type": "string", "enum": ["neutral", "formal", "friendly", "playful", "urgent"], "default": "neutral", "nullable": true },
+            "messageCount": { "type": "integer", "minimum": 1, "maximum": 5, "default": 3, "nullable": true }
+          },
+          "required": ["objective"]
+        },
+        "AudienceSegment": {
+          "type": "object",
+          "properties": {
+            "_id": { "type": "string", "format": "objectid", "description": "MongoDB ObjectId" },
+            "name": { "type": "string" },
+            "description": { "type": "string", "nullable": true },
+            "rules": { "$ref": "#/components/schemas/AudienceRuleSet" },
+            "createdBy": { "type": "string", "format": "objectid", "description": "User ID of creator (MongoDB ObjectId)", "nullable": true },
+            "createdAt": { "type": "string", "format": "date-time" },
+            "updatedAt": { "type": "string", "format": "date-time" }
+          }
+        },
+        "CreateAudienceSegmentRequest": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string", "minLength": 3 },
+            "description": { "type": "string", "nullable": true },
+            "rules": { "$ref": "#/components/schemas/AudienceRuleSet" }
+          },
+          "required": ["name", "rules"]
+        },
+        "Campaign": {
+          "type": "object",
+          "properties": {
+            "_id": { "type": "string", "format": "objectid" },
+            "name": { "type": "string" },
+            "audienceRules": { "$ref": "#/components/schemas/AudienceRuleSet" },
+            "messageTemplate": { "type": "string" },
+            "status": { "type": "string", "enum": ["DRAFT", "SENDING", "COMPLETED", "FAILED", "ARCHIVED"] },
+            "audienceSize": { "type": "integer", "default": 0 },
+            "sentCount": { "type": "integer", "default": 0 },
+            "failedCount": { "type": "integer", "default": 0 },
+            "tags": { "type": "array", "items": { "type": "string" }, "nullable": true },
+            "createdBy": { "type": "string", "format": "objectid", "nullable": true },
+            "createdAt": { "type": "string", "format": "date-time" },
+            "updatedAt": { "type": "string", "format": "date-time" }
+          }
+        },
+        "CreateCampaignRequest": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string", "minLength": 3 },
+            "audienceRules": { "$ref": "#/components/schemas/AudienceRuleSet" },
+            "messageTemplate": { "type": "string", "minLength": 10 }
+          },
+          "required": ["name", "audienceRules", "messageTemplate"]
+        },
+        "CommunicationLog": {
+          "type": "object",
+          "properties": {
+            "_id": { "type": "string", "format": "objectid" },
+            "campaignId": { "type": "string", "format": "objectid" },
+            "customerId": { "type": "string", "format": "objectid" },
+            "message": { "type": "string" },
+            "status": { "type": "string", "enum": ["PENDING", "SENT", "FAILED", "DELIVERED"] },
+            "sentAt": { "type": "string", "format": "date-time", "nullable": true },
+            "failedAt": { "type": "string", "format": "date-time", "nullable": true },
+            "deliveredAt": { "type": "string", "format": "date-time", "nullable": true },
+            "failureReason": { "type": "string", "nullable": true },
+            "vendorMessageId": { "type": "string", "nullable": true },
+            "createdBy": { "type": "string", "format": "objectid", "nullable": true },
+            "createdAt": { "type": "string", "format": "date-time" },
+            "updatedAt": { "type": "string", "format": "date-time" }
+          }
+        },
+        "Customer": {
+          "type": "object",
+          "properties": {
+            "_id": { "type": "string", "format": "objectid" },
+            "name": { "type": "string" },
+            "email": { "type": "string", "format": "email" },
+            "totalSpends": { "type": "number", "default": 0 },
+            "visitCount": { "type": "integer", "default": 0 },
+            "lastActiveDate": { "type": "string", "format": "date-time", "nullable": true },
+            "createdAt": { "type": "string", "format": "date-time" },
+            "updatedAt": { "type": "string", "format": "date-time" }
+          }
+        },
+        "CreateCustomerRequest": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string", "minLength": 1 },
+            "email": { "type": "string", "format": "email" },
+            "totalSpends": { "type": "number", "minimum": 0, "nullable": true },
+            "visitCount": { "type": "integer", "minimum": 0, "nullable": true },
+            "lastActiveDate": { "type": "string", "format": "date-time", "nullable": true }
+          },
+          "required": ["name", "email"]
+        },
+        "Order": {
+          "type": "object",
+          "properties": {
+            "_id": { "type": "string", "format": "objectid" },
+            "orderId": { "type": "string" },
+            "customerId": { "type": "string", "format": "objectid" },
+            "orderAmount": { "type": "number", "minimum": 0 },
+            "orderDate": { "type": "string", "format": "date-time" },
+            "createdAt": { "type": "string", "format": "date-time" },
+            "updatedAt": { "type": "string", "format": "date-time" }
+          }
+        },
+        "CreateOrderRequest": {
+          "type": "object",
+          "properties": {
+            "orderId": { "type": "string", "minLength": 1 },
+            "customerId": { "type": "string", "description": "MongoDB ObjectId of the customer." },
+            "orderAmount": { "type": "number", "minimum": 0 },
+            "orderDate": { "type": "string", "format": "date-time" }
+          },
+          "required": ["orderId", "customerId", "orderAmount", "orderDate"]
+        },
+        "DeliveryReceiptWebhook": {
+          "type": "object",
+          "properties": {
+            "communicationLogId": { "type": "string", "description": "MongoDB ObjectId of the communication log." },
+            "status": { "type": "string", "description": "Delivery status from vendor." },
+            "vendorMessageId": { "type": "string", "description": "ID assigned by the vendor." },
+            "timestamp": { "type": "string", "format": "date-time", "description": "Timestamp of the status update." },
+            "failureReason": { "type": "string", "nullable": true, "description": "Reason for failure, if applicable." }
+          },
+          "required": ["communicationLogId", "status", "vendorMessageId", "timestamp"]
+        },
+        "DummyVendorSendRequest": {
+          "type": "object",
+          "properties": {
+            "customerId": { "type": "string" },
+            "message": { "type": "string" },
+            "communicationLogId": { "type": "string" },
+            "callbackUrl": { "type": "string", "format": "uri" },
+            "customerEmail": { "type": "string", "format": "email", "nullable": true }
+          },
+          "required": ["customerId", "message", "communicationLogId", "callbackUrl"]
+        },
+        "RegisterRequest": {
+          "type": "object",
+          "properties": {
+            "fullName": { "type": "string" },
+            "email": { "type": "string", "format": "email" },
+            "password": { "type": "string", "minLength": 6 }
+          },
+          "required": ["fullName", "email", "password"]
+        },
+        "BulkUploadErrorDetail": {
+          "type": "object",
+          "properties": {
+              "row": { "type": "integer", "description": "Row number in the CSV file (1-based for data rows)." },
+              "email": { "type": "string", "nullable": true, "description": "Email of the record with error (for customer/order CSVs)." },
+              "orderId": { "type": "string", "nullable": true, "description": "Order ID of the record with error (for order CSVs)." },
+              "message": { "type": "string", "description": "Error message." },
+              "details": { "type": "object", "additionalProperties": true, "nullable": true, "description": "Detailed error information, often from Zod." }
+          }
+        }
+      },
+      "parameters": {
+        "CampaignIdPath": {
+          "name": "campaignId",
+          "in": "path",
+          "required": true,
+          "description": "The ID of the campaign.",
+          "schema": { "type": "string", "format": "objectid" }
+        },
+        "SegmentIdPath": {
+          "name": "segmentId",
+          "in": "path",
+          "required": true,
+          "description": "The ID of the audience segment.",
+          "schema": { "type": "string", "format": "objectid" }
+        }
+      },
+      "responses": {
+        "BadRequest": {
+          "description": "Bad Request - Often due to validation errors.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" },
+                  "errors": { "type": "object", "additionalProperties": true, "nullable": true }
+                }
+              }
+            }
+          }
+        },
+        "Unauthorized": {
+          "description": "Unauthorized - Authentication is required and has failed or has not yet been provided.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string", "example": "Unauthorized" }
+                }
+              }
+            }
+          }
+        },
+        "NotFound": {
+          "description": "Not Found - The requested resource could not be found.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "Conflict": {
+          "description": "Conflict - The request could not be completed due to a conflict with the current state of the resource (e.g., duplicate entry).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "UnprocessableEntity": {
+          "description": "Unprocessable Entity - The server understands the content type of the request entity, and the syntax of the request entity is correct, but it was unable to process the contained instructions (e.g., AI could not process prompt).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "InternalServerError": {
+          "description": "Internal Server Error - An unexpected condition was encountered.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" },
+                  "error": { "type": "string", "nullable": true }
+                }
+              }
+            }
+          }
+        },
+        "ServiceUnavailable": {
+          "description": "Service Unavailable - The server is currently unable to handle the request due to a temporary overload or maintenance (e.g., AI service not configured).",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "message": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "BulkUploadResult": {
+          "description": "Result of a bulk upload operation.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "successfulUploads": { "type": "integer" },
+                  "failedUploads": { "type": "integer" },
+                  "errors": {
+                    "type": "array",
+                    "items": { "$ref": "#/components/schemas/BulkUploadErrorDetail" }
+                  },
+                  "createdCustomers": { "type": "array", "items": { "type": "object" }, "description": "Summary of created customers, if applicable.", "nullable": true },
+                  "createdOrders": { "type": "array", "items": { "type": "object" }, "description": "Summary of created orders, if applicable.", "nullable": true }
+                }
               }
             }
           }
         }
       }
     }
-  }
-} 
+  } 
