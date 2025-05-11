@@ -56,7 +56,10 @@ export default function SignUp() {
       if (signInResult?.error) {
         router.push("/sign-in")
       } else {
-        router.push("/")
+        router.replace('/');
+        setTimeout(() => {
+          router.refresh();
+        }, 1000);
       }
     } catch {
       setError("Something went wrong")

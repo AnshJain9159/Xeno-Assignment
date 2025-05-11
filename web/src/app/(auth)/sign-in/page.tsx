@@ -38,7 +38,10 @@ export default function SignIn() {
         return
       }
 
-      router.push("/")
+      router.replace('/');
+      setTimeout(() => {
+          router.refresh();
+      }, 1000);
     } catch {
       setError("Something went wrong")
     } finally {
