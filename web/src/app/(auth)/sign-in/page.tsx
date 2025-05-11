@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import {   useRouter } from "next/navigation"
 import { signIn } from "next-auth/react"
+
 import Link from "next/link"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -51,7 +52,7 @@ export default function SignIn() {
 
   async function handleGoogleSignIn() {
     setGoogleLoading(true)
-    await signIn("google", { callbackUrl: "/" })
+    await signIn("google", { redirectTo: "/" })
     setGoogleLoading(false)
   }
 
@@ -94,12 +95,7 @@ export default function SignIn() {
                 />
               </div>
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
-                  <Link href="/forgot-password" className="text-xs text-primary hover:underline">
-                    Forgot password?
-                  </Link>
-                </div>
+                
                 <Input
                   id="password"
                   name="password"

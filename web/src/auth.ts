@@ -20,7 +20,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   adapter: MongoDBAdapter(client),
   pages: {
     signIn: "/sign-in",
-    newUser: "/sign-up",
+    newUser: "/",
   },
   
   providers: [

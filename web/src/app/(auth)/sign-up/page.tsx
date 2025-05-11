@@ -70,7 +70,7 @@ export default function SignUp() {
 
   async function handleGoogleSignIn() {
     setGoogleLoading(true)
-    await signIn("google", { callbackUrl: "/" })
+    await signIn("google", { redirectTo: "/" })
     setGoogleLoading(false)
   }
 
