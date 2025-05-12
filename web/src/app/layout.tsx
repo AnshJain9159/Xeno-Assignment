@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { SessionProvider } from "next-auth/react";
-import { auth } from "@/auth";
+// import { auth } from "@/auth";
 import ClientLayout from "@/components/ClientLayout";
 import { Toaster } from "@/components/ui/sonner";
 
@@ -27,12 +27,12 @@ const RootLayout = async({
 }: Readonly<{
   children: React.ReactNode;
 }>) => {
-  const session = await auth();
+  // const session = await auth();
 
   return (
     <html lang="en" suppressHydrationWarning={true}
      className='!scroll-smooth'>
-      <SessionProvider session={session}>
+      <SessionProvider >
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         > 

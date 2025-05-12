@@ -18,9 +18,11 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   },
 
   adapter: MongoDBAdapter(client),
+
   pages: {
     signIn: "/sign-in",
     newUser: "/",
+    
   },
   
   providers: [
@@ -33,36 +35,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials?.password) {
-          return null;
+          throw new Error("Missing email or password");
         }
-        try {
-          const result = signInSchema.safeParse(credentials);
-          
-          if (!result.success) {
-            return null;
-          }
-
-          const user = await UserModel.findOne({ email: credentials?.email });
-          
-          if (!user || !credentials?.password) {
-            return null;
-          }
-
-          const isPasswordValid = await compare(credentials?.password.toString(), user.password);
-
-          if (!isPasswordValid) {
-            return null;
-          }
-
-          return {
-            id: user._id.toString(),
-            email: user.email,
-            name: user.fullName,
-          } as User;
-        } catch (error) {
-          console.error(error);
-          return null;
+        const result = signInSchema.safeParse(credentials);
+        if (!result.success) {
+          throw new Error("Invalid email or password format");
         }
+        const user = await UserModel.findOne({ email: credentials.email });
+        if (!user) {
+          throw new Error("No user found with this email");
+        }
+        const isPasswordValid = await compare(credentials.password.toString(), user.password);
+        if (!isPasswordValid) {
+          throw new Error("Incorrect password");
+        }
+        return {
+          id: user._id.toString(),
+          email: user.email,
+          name: user.fullName,
+        } as User;
       }
     })
   ],

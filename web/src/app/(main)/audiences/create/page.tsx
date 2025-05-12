@@ -80,22 +80,30 @@ export default function CreateAudiencePage() {
     }
   }
 
-  // Simulate audience size calculation
   const calculateAudienceSize = async (rulesObj: any) => {
-    setIsCalculatingSize(true)
-    try {
-      // In a real app, this would be an API call to calculate the actual size
-      // For demo purposes, we'll simulate a delay and return a random number
-      await new Promise((resolve) => setTimeout(resolve, 1500))
-      const randomSize = Math.floor(Math.random() * 10000) + 500
-      setEstimatedAudienceSize(randomSize)
-    } catch (error) {
-      console.error("Error calculating audience size:", error)
-      toast.error("Failed to calculate audience size")
-    } finally {
-      setIsCalculatingSize(false)
+  setIsCalculatingSize(true);
+  setEstimatedAudienceSize(null);
+  try {
+    const response = await fetch("/api/audiences/preview", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ rules: rulesObj }),
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to preview audience size");
     }
+    setEstimatedAudienceSize(
+      typeof data.audienceSize === "number" ? data.audienceSize : 0
+    );
+  } catch (error) {
+    console.error("Error calculating audience size:", error);
+    toast.error("Failed to calculate audience size");
+    setEstimatedAudienceSize(0);
+  } finally {
+    setIsCalculatingSize(false);
   }
+  };
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

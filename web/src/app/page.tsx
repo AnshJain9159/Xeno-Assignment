@@ -4,6 +4,8 @@ import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, BarChart3, MessageSquare, Users, Zap, CheckCircle2, ChevronRight } from "lucide-react";
+import { ShootingStars } from "@/components/ui/shooting-stars";
+import { StarsBackground } from "@/components/ui/stars-background";
 
 export default function LandingPage() {
   return (
@@ -54,6 +56,8 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
+          <ShootingStars />
+        <StarsBackground/>
         </section>
 
         {/* Features Section */}
@@ -178,6 +182,8 @@ export default function LandingPage() {
               </Card>
             </div>
           </div>
+          <ShootingStars />
+        <StarsBackground/>
         </section>
 
         {/* How It Works Section */}
@@ -244,6 +250,8 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
+          <ShootingStars />
+        <StarsBackground/>
         </section>
 
         {/* CTA Section */}
@@ -270,7 +278,10 @@ export default function LandingPage() {
               </div>
             </div>
           </div>
+          <ShootingStars  />
+        <StarsBackground starDensity={0.0002}/>
         </section>
+        
       </main>
     </div>
   );
