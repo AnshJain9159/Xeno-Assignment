@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useEffect, useState, useCallback, useRef } from "react"
-import { useParams, useRouter } from "next/navigation"
+import { useParams } from "next/navigation"
 import type { ICampaign } from "@/models/campaign"
 import type { ICommunicationLog } from "@/models/communicationLog"
 import { toast } from "sonner"
@@ -31,7 +32,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
-
+import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 async function fetchCampaignDetails(id: string): Promise<{ campaign: ICampaign | null; logs: ICommunicationLog[] }> {
   console.log(`Frontend: Fetching details for campaign ${id}`)
   try {
@@ -68,7 +70,17 @@ export default function CampaignDetailPage() {
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("ALL")
   const [isRefreshing, setIsRefreshing] = useState(false)
-
+  const { data: session, status } = useSession();
+  
+    useEffect(() => {
+      if (status !== "authenticated") {
+        toast.error("You must be signed in to view this page.")
+        setTimeout(() => {
+            router.push("/sign-in");
+        }, 750);
+        
+      }
+    }, [status]);
   // Ref to store the interval ID
   const pollIntervalRef = useRef<NodeJS.Timeout | null>(null)
 

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
@@ -22,6 +23,8 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 
 export default function ListAudiencesPage() {
   const [audienceSegments, setAudienceSegments] = useState<IAudienceSegment[]>([])
@@ -29,6 +32,18 @@ export default function ListAudiencesPage() {
   const [selectedSegmentRules, setSelectedSegmentRules] = useState<object | null>(null)
   const [searchQuery, setSearchQuery] = useState("")
   const [sortBy, setSortBy] = useState("newest")
+  const { data: session, status } = useSession();
+  const router = useRouter()
+  
+    useEffect(() => {
+      if (status !== "authenticated") {
+        toast.error("You must be signed in to view this page.")
+        setTimeout(() => {
+            router.push("/sign-in");
+        }, 750);
+        
+      }
+    }, [status,router]);
 
   useEffect(() => {
     const fetchAudienceSegments = async () => {

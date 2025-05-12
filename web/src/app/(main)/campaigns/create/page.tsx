@@ -33,7 +33,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Progress } from "@/components/ui/progress"
-
+import { useSession } from "next-auth/react"
 // Default empty rule structure
 const defaultRuleGroup: IRuleGroup = {
   logicalOperator: "AND",
@@ -60,7 +60,18 @@ export default function CreateCampaignPage() {
   const [activeMessageTab, setActiveMessageTab] = useState("template")
   const [messageGenerationProgress, setMessageGenerationProgress] = useState(0)
   const [selectedMessage, setSelectedMessage] = useState("")
-
+  const { data: session, status } = useSession();
+  // const router = useRouter()
+  
+    useEffect(() => {
+      if (status !== "authenticated") {
+        toast.error("You must be signed in to view this page.")
+        setTimeout(() => {
+            router.push("/sign-in");
+        }, 750);
+        
+      }
+    }, [status,router]);
   // Effect to load segment rules if segmentId is in URL
   useEffect(() => {
     const segmentId = searchParams.get("segmentId")

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
 
 import { useEffect, useState } from "react"
@@ -13,13 +15,26 @@ import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { useRouter } from "next/navigation"
+import { useSession } from "next-auth/react"
 
 export default function CampaignsPage() {
   const [campaigns, setCampaigns] = useState<ICampaign[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [statusFilter, setStatusFilter] = useState("ALL")
-
+  const { data: session, status } = useSession();
+    const router = useRouter()
+    
+      useEffect(() => {
+        if (status !== "authenticated") {
+          toast.error("You must be signed in to view this page.")
+          setTimeout(() => {
+              router.push("/sign-in");
+          }, 750);
+          
+        }
+      }, [status,router]);
   useEffect(() => {
     const fetchCampaigns = async () => {
       setIsLoading(true)

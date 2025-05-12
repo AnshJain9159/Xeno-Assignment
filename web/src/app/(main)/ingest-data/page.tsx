@@ -30,6 +30,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { Progress } from "@/components/ui/progress"
+import { useSession } from "next-auth/react"
+import { useRouter } from "next/navigation"
 // import { auth } from "@/auth"
 // import { redirect } from "next/dist/server/api-utils"
 
@@ -172,6 +174,18 @@ export default function IngestDataPage() {
   const [isUploadingOrderCsv, setIsUploadingOrderCsv] = useState(false)
   const [uploadProgress, setUploadProgress] = useState(0)
   const [orderUploadProgress, setOrderUploadProgress] = useState(0)
+  const { data: session, status } = useSession();
+  const router = useRouter()
+  
+    useEffect(() => {
+      if (status !== "authenticated") {
+        toast.error("You must be signed in to view this page.")
+        setTimeout(() => {
+            router.push("/sign-in");
+        }, 750);
+        
+      }
+    }, [status,router]);
   const [uploadResults, setUploadResults] = useState<{
     successfulUploads: number
     failedUploads: number

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 "use client"
@@ -21,6 +22,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Badge } from "@/components/ui/badge"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Users } from "lucide-react"
+import { useSession } from "next-auth/react"
 
 const defaultRuleGroup: IRuleGroup = {
   logicalOperator: "AND",
@@ -42,8 +44,18 @@ export default function CreateAudiencePage() {
   const [activeTab, setActiveTab] = useState("natural-language")
   const [estimatedAudienceSize, setEstimatedAudienceSize] = useState<number | null>(null)
   const [isCalculatingSize, setIsCalculatingSize] = useState(false)
-
+  const { data: session, status } = useSession();
   const router = useRouter()
+  
+    useEffect(() => {
+      if (status !== "authenticated") {
+        toast.error("You must be signed in to view this page.")
+        setTimeout(() => {
+            router.push("/sign-in");
+        }, 750);
+        
+      }
+    }, [status]);
 
   const handleGenerateRulesWithAI = async () => {
     if (!naturalLanguagePrompt.trim()) {
@@ -443,3 +455,7 @@ export default function CreateAudiencePage() {
     </div>
   )
 }
+function useEffect(arg0: () => void, arg1: ("loading" | "authenticated" | "unauthenticated")[]) {
+  throw new Error("Function not implemented.")
+}
+
