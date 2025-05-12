@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import path from 'path';
 import { promises as fs } from 'fs';
-import { auth } from '@/auth';
+// import { auth } from '@/auth';
 export async function GET() {
   try {
-    const session = await auth();
-    if (!session) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
-    }
+    // const session = await auth();
+    // if (!session) {
+    //   return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    // }
     // Construct the path to openapi.json in the public directory
     const jsonFilePath = path.join(process.cwd(), 'public', 'openapi.json');
     

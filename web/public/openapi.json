@@ -1,4 +1,4 @@
-  {
+{
     "openapi": "3.0.0",
     "info": {
       "title": "Smart-Sphere CRM  API",
@@ -21,6 +21,7 @@
         "post": {
           "tags": ["AI"],
           "summary": "Generates customer segmentation rules from a natural language prompt.",
+          "description": "Rate limit: 5 requests per minute per user (Upstash Redis). Exceeding this limit will redirect to the home page (/).",
           "requestBody": {
             "required": true,
             "content": {
@@ -54,6 +55,7 @@
         "post": {
           "tags": ["AI"],
           "summary": "Suggests marketing messages based on campaign objectives.",
+          "description": "Rate limit: 5 requests per minute per user (Upstash Redis). Exceeding this limit will redirect to the home page (/).",
           "requestBody": {
             "required": true,
             "content": {
@@ -663,6 +665,7 @@
         "post": {
           "tags": ["Auth"],
           "summary": "Registers a new user.",
+          "description": "Rate limit: 5 requests per minute per user (Upstash Redis). Exceeding this limit will redirect to the home page (/).",
           "requestBody": {
             "required": true,
             "content": {
@@ -1130,4 +1133,4 @@
         }
       }
     }
-  } 
+  }
