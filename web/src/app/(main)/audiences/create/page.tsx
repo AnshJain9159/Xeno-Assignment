@@ -5,7 +5,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -455,7 +455,3 @@ export default function CreateAudiencePage() {
     </div>
   )
 }
-function useEffect(arg0: () => void, arg1: ("loading" | "authenticated" | "unauthenticated")[]) {
-  throw new Error("Function not implemented.")
-}
-
